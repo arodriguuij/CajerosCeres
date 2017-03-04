@@ -1,0 +1,114 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.alejandro.cajerosceres.ActualizarFragment">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/perfil"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="383dp"
+            android:layout_height="128dp"
+            app:srcCompat="@drawable/imagen_home"
+            android:id="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:elevation="1dp" />
+
+        <ImageView
+            android:layout_width="67dp"
+            android:layout_height="67dp"
+            app:srcCompat="@drawable/imagen_home"
+            android:id="@+id/imageView4"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:elevation="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonActualizarActualizar"
+            android:layout_marginBottom="208dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+        <Button
+            android:text="Confirmar actualización"
+            android:layout_width="365dp"
+            android:layout_height="59dp"
+            android:id="@+id/buttonActualizarActualizar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <TextView
+            android:text="Nuevo nombre: "
+            android:layout_width="137dp"
+            android:layout_height="23dp"
+            android:id="@+id/textView5"
+            android:textSize="18sp"
+            android:textStyle="normal|bold"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/editTextNuevaContraseñaActualizar"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintBottom_toTopOf="@+id/textView6"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintVertical_bias="0.72"
+            app:layout_constraintHorizontal_bias="0.22" />
+
+        <EditText
+            android:layout_width="150dp"
+            android:layout_height="42dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editTextNuevoNombreActualizar"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3"
+            app:layout_constraintBottom_toTopOf="@+id/editTextNuevaContraseñaActualizar"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintVertical_bias="0.78" />
+
+        <TextView
+            android:text="Nueva contraseña: "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView6"
+            android:textSize="18sp"
+            android:textStyle="normal|bold"
+            app:layout_constraintBottom_toTopOf="@+id/buttonActualizarActualizar"
+            android:layout_marginBottom="80dp"
+            app:layout_constraintRight_toLeftOf="@+id/editTextNuevaContraseñaActualizar"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.25" />
+
+        <EditText
+            android:layout_width="150dp"
+            android:ems="10"
+            android:id="@+id/editTextNuevaContraseñaActualizar"
+            android:layout_height="40dp"
+            android:inputType="textVisiblePassword"
+            app:layout_constraintBottom_toTopOf="@+id/buttonActualizarActualizar"
+            android:layout_marginBottom="80dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>
