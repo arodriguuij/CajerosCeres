@@ -19,19 +19,11 @@ public class PerfilFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
-
-        Bundle bundle = this.getArguments();
-        String namePaquete = bundle.getString("nombre");
-        String passwordPaquete = bundle.getString("password");
-
         textViewPerfilNombre = (TextView) view.findViewById(R.id.textViewPerfilNombre);
-        textViewPerfilNombre.setText(namePaquete);
         textViewPerfilPassword = (TextView)view.findViewById(R.id.textViewPerfilPassword);
-        textViewPerfilPassword.setText(passwordPaquete);
         buttonModificarDatosPerfil = (Button) view.findViewById(R.id.buttonModificarDatosPerfil);
         buttonFavoritosPerfil = (Button) view.findViewById(R.id.buttonFavoritosPerfil);
         buttonBorrarPerfil = (Button) view.findViewById(R.id.buttonBorrarPerfil);
-
         return view;
     }
 

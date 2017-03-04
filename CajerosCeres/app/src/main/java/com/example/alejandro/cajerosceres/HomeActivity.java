@@ -33,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonRegistro.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent IntentRegistro = new Intent(getApplicationContext(), MenuLateral.class);
-                IntentRegistro.putExtra("id", "Crear");
+                IntentRegistro.putExtra("id", "Registro");
                 startActivity(IntentRegistro);
             }
         });
@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonContinuarSinAcceder.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), MenuLateral.class);
-                intent.putExtra("id", "Buscar");
+                intent.putExtra("id", "ContinuarSinAcceder");
                 startActivity(intent);
             }
         });

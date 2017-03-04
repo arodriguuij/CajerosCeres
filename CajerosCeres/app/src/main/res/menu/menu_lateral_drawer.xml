@@ -30,10 +30,6 @@
                 android:id="@+id/Ayuda"
                 android:icon="@drawable/ayuda"
                 android:title="Ayuda" />
-            <item
-                android:id="@+id/Ajustes"
-                android:icon="@drawable/ajustes"
-                android:title="Ajustes" />
         </menu>
     </item>
 
