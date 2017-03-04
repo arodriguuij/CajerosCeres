@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/Perfil"
+        android:orderInCategory="1"
+        android:title="Perfil"
+        android:icon="@drawable/perfil"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/Buscar"
+        android:orderInCategory="2"
+        android:title="Buscar"
+        android:icon="@mipmap/ic_launcher"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="3"
+        android:title="Settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/Ayuda"
+        android:orderInCategory="4"
+        android:title="Ayuda"
+        app:showAsAction="never" />
+</menu>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Buscar"
+            android:icon="@drawable/buscar"
+            android:title="Buscar" />
+        <item
+            android:id="@+id/Registrarse"
+            android:icon="@drawable/registrarse"
+            android:title="Registrarse" />
+        <item
+            android:id="@+id/Login"
+            android:icon="@drawable/login"
+            android:title="Login" />
+        <item
+            android:id="@+id/Perfil"
+            android:icon="@drawable/perfil"
+            android:title="Perfil" />
+        <item
+            android:id="@+id/Favoritos"
+            android:icon="@drawable/favoritos"
+            android:title="Favoritos" />
+    </group>
+
+    <item android:title="Otras opciones">
+        <menu>
+            <item
+                android:id="@+id/Ayuda"
+                android:icon="@drawable/ayuda"
+                android:title="Ayuda" />
+            <item
+                android:id="@+id/Ajustes"
+                android:icon="@drawable/ajustes"
+                android:title="Ajustes" />
+        </menu>
+    </item>
+
+</menu>
