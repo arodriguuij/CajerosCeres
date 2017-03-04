@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DataBaseHelper extends SQLiteOpenHelper{
+public class DataBaseHelperCajeros extends SQLiteOpenHelper{
 
-    public DataBaseHelper(Context context) {
+    public DataBaseHelperCajeros(Context context) {
         super(context, "Retail", null, 1);
     }
 
@@ -20,6 +20,4 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         sqLiteDatabase.execSQL(CajeroTable.DROP_QUERY);
         sqLiteDatabase.execSQL(CajeroTable.CREATE_QUERY);
     }
-
-
 }

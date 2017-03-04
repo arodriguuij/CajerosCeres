@@ -14,10 +14,9 @@ public class CajeroTable implements BaseColumns{
     final static String COLUMNA_LONGITUD = "longitud";
     final static String COLUMNA_LATITUD = "latitud";
     final static String COLUMNA_DIRECCION = "direccion";
-    final static String COLUMNA_COMISION = "comision";
     final static String COLUMNA_FAV = "fav";
     final static String[] columns = {COLUMNA_ID, COLUMNA_ENTIDADBANCARIA, COLUMNA_URIFOTOCAJERO, COLUMNA_LONGITUD,
-            COLUMNA_LATITUD, COLUMNA_DIRECCION, COLUMNA_COMISION, COLUMNA_FAV};
+            COLUMNA_LATITUD, COLUMNA_DIRECCION, COLUMNA_FAV};
 
     public static final String CREATE_QUERY = "create table " + TABLA_CAJEROS + " (" +
             COLUMNA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -26,7 +25,6 @@ public class CajeroTable implements BaseColumns{
             COLUMNA_LONGITUD + " TEXT, " +
             COLUMNA_LATITUD + " TEXT, " +
             COLUMNA_DIRECCION + " TEXT, " +
-            COLUMNA_COMISION + " TEXT, " +
             COLUMNA_FAV + " TEXT) " ;
 
     public static final String DROP_QUERY = "drop table " + TABLA_CAJEROS;

@@ -6,18 +6,16 @@ public class Cajero {
     private double longitud;
     private double latitud;
     private String direccion;
-    private float comision;
     private boolean fav;
     private int id;
 
     public Cajero(String nombreEntidadBancaria, String uriFotoCajero, double longitud,
-                  double latitud, String direccion, float comision, boolean fav, int id) {
+                  double latitud, String direccion, boolean fav, int id) {
         this.entidadBancaria = nombreEntidadBancaria;
         this.uriFotoCajero = uriFotoCajero;
         this.longitud = longitud;
         this.latitud = latitud;
         this.direccion = direccion;
-        this.comision = comision;
         this.fav = fav;
         this.id = id;
     }
@@ -60,14 +58,6 @@ public class Cajero {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
-    }
-
-    public float getComision() {
-        return comision;
-    }
-
-    public void setComision(float comision) {
-        this.comision = comision;
     }
 
     public boolean isFav() {
