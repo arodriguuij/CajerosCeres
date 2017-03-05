@@ -28,5 +28,5 @@ public class CajeroTable implements BaseColumns{
             COLUMNA_FAV + " TEXT) " ;
 
     public static final String DROP_QUERY = "drop table " + TABLA_CAJEROS;
-    public static final String SElECT_ALL_QUERY = "select * from " + TABLA_CAJEROS;
+    public static final String SELECT_ALL_QUERY = "select * from " + TABLA_CAJEROS;
 }

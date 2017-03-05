@@ -125,7 +125,15 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    public void responderBusqueda() {
+    public void responderBusquedaMapaCajeros() {
+        Intent Intent = new Intent(getApplicationContext(), MapaActivity.class);
+        startActivity(Intent);
+    }
+
+    @Override
+    public void responderBusquedaListaCajeros() {
+        Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
+        startActivity(Intent);
     }
 
     @Override

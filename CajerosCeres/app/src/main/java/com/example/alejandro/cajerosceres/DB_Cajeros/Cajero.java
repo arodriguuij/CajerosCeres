@@ -1,23 +1,26 @@
 package com.example.alejandro.cajerosceres.DB_Cajeros;
 
 public class Cajero {
+    private int id;
     private String entidadBancaria;
     private String uriFotoCajero;
     private double longitud;
     private double latitud;
     private String direccion;
     private boolean fav;
-    private int id;
 
-    public Cajero(String nombreEntidadBancaria, String uriFotoCajero, double longitud,
-                  double latitud, String direccion, boolean fav, int id) {
+    public Cajero(){
+
+    }
+    public Cajero(int id, String nombreEntidadBancaria, String uriFotoCajero, double longitud,
+                  double latitud, String direccion, boolean fav) {
+        this.id = id;
         this.entidadBancaria = nombreEntidadBancaria;
         this.uriFotoCajero = uriFotoCajero;
         this.longitud = longitud;
         this.latitud = latitud;
         this.direccion = direccion;
         this.fav = fav;
-        this.id = id;
     }
 
     public String getEntidadBancaria() {

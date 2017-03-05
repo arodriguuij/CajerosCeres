@@ -9,4 +9,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_cajero_list">Items</string>
+    <string name="title_cajero_detail">Cajero Detail</string>
 </resources>
