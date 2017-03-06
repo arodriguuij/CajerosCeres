@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.alejandro.cajerosceres.Json.JSONParser;
-
 public class DataBaseHelperCajeros extends SQLiteOpenHelper{
 
     public DataBaseHelperCajeros(Context context) {
-        super(context, "Retail", null, 1);
+        super(context, "DB_Cajeros", null, 1);
     }
 
     @Override
@@ -28,7 +26,7 @@ public class DataBaseHelperCajeros extends SQLiteOpenHelper{
     public void importarCajero(Cajero c){
         ContentValues values = new ContentValues();
         SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor test = this.getReadableDatabase().rawQuery("select * from cajeros where id like '"+c.getId()+"'",null)){
+        try (Cursor test = this.getReadableDatabase().rawQuery("select * from cajeros where _id like '"+c.getId()+"'",null)){
             if(test.getCount() == 0){
                 values.put(CajeroTable.COLUMNA_ID, c.getId());
                 values.put(CajeroTable.COLUMNA_ENTIDADBANCARIA, c.getEntidadBancaria());
@@ -44,7 +42,21 @@ public class DataBaseHelperCajeros extends SQLiteOpenHelper{
         }
     }
 
-    public Cursor getCursorViaje() {
+    public Cursor getCursorCajero() {
         return this.getWritableDatabase().rawQuery(CajeroTable.SELECT_ALL_QUERY, null);
+    }
+
+    public Cursor getCajero(Integer idCajero) {
+        try ( Cursor test = this.getReadableDatabase().rawQuery("select * from VIAJES where COLUMNA_ID like '"+idCajero+"'",null)) {
+            if (test.getCount() != 0)
+                return test;
+        }
+        return null;
+    }
+
+    public void onRestar() {
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        sqLiteDatabase.execSQL(CajeroTable.DROP_QUERY);
+        sqLiteDatabase.execSQL(CajeroTable.CREATE_QUERY);
     }
 }

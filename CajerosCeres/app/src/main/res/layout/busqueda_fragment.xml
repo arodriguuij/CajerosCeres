@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/buttonMapaCajeros"
-            android:layout_marginTop="184dp"
+            android:layout_marginTop="88dp"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="16dp"
             app:layout_constraintRight_toRightOf="parent"
@@ -35,10 +35,39 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginStart="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="56dp"
             app:layout_constraintTop_toBottomOf="@+id/buttonMapaCajeros"
+            app:layout_constraintVertical_bias="0.32999998" />
+
+        <Button
+            android:text="Actualizar cajeros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonActualizarCajeros"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="16dp"
-            app:layout_constraintVertical_bias="0.32999998" />
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center"
+            android:indeterminateDrawable="@drawable/circular"
+            android:max="100"
+            android:progress="0"
+            android:layout_marginTop="40dp"
+            app:layout_constraintTop_toBottomOf="@+id/buttonListaCajeros"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

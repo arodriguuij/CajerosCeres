@@ -7,13 +7,13 @@ public class Cajero {
     private double longitud;
     private double latitud;
     private String direccion;
-    private boolean fav;
+    private int fav;
 
     public Cajero(){
 
     }
     public Cajero(int id, String nombreEntidadBancaria, String uriFotoCajero, double longitud,
-                  double latitud, String direccion, boolean fav) {
+                  double latitud, String direccion, int fav) {
         this.id = id;
         this.entidadBancaria = nombreEntidadBancaria;
         this.uriFotoCajero = uriFotoCajero;
@@ -63,11 +63,11 @@ public class Cajero {
         this.direccion = direccion;
     }
 
-    public boolean isFav() {
+    public int isFav() {
         return fav;
     }
 
-    public void setFav(boolean fav) {
+    public void setFav(int fav) {
         this.fav = fav;
     }
 
