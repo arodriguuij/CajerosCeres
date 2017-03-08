@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/Buscar"
-        android:orderInCategory="2"
+        android:orderInCategory="1"
         android:title="Buscar"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/busqueda"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="3"
-        android:title="Settings"
+        android:orderInCategory="2"
+        android:title="Ajustes"
         app:showAsAction="never" />
     <item
         android:id="@+id/Ayuda"
-        android:orderInCategory="4"
+        android:orderInCategory="3"
         android:title="Ayuda"
         app:showAsAction="never" />
 </menu>

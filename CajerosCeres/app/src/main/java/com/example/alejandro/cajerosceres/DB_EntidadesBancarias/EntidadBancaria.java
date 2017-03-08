@@ -2,32 +2,32 @@ package com.example.alejandro.cajerosceres.DB_EntidadesBancarias;
 
 public class EntidadBancaria {
     private int id;
-    private String nombreEntidadBancaria;
-    private float comisionBancoPopular;
-    private float comisionBancaPueyo;
-    private float comisionBankinter;
-    private float comisionBBVA;
-    private float comisionCaixa;
-    private float comisionCaixaGeral;
-    private float comisionCajaAlmendralejo;
-    private float comisionCajaBadajoz;
-    private float comisionCajaDuero;
-    private float comisionCajaExtremadura;
-    private float comisionCajaRural;
-    private float comisionDeutscheBank;
-    private float comisionLiberbank;
-    private float comisionPopular;
-    private float comisionSabadell;
-    private float comisionSantander;
+    private String entidadBancaria;
+    private double comisionBancoPopular;
+    private double comisionBancaPueyo;
+    private double comisionBankinter;
+    private double comisionBBVA;
+    private double comisionCaixa;
+    private double comisionCaixaGeral;
+    private double comisionCajaAlmendralejo;
+    private double comisionCajaBadajoz;
+    private double comisionCajaDuero;
+    private double comisionCajaExtremadura;
+    private double comisionCajaRural;
+    private double comisionDeutscheBank;
+    private double comisionLiberbank;
+    private double comisionPopular;
+    private double comisionSabadell;
+    private double comisionSantander;
 
-    public EntidadBancaria(int id, String nombreEntidadBancaria, float comisionBancoPopular,
-                           float comisionBancaPueyo, float comisionBankinter, float comisionBBVA,
-                           float comisionCaixa, float comisionCaixaGeral, float comisionCajaAlmendralejo,
-                           float comisionCajaBadajoz, float comisionCajaDuero, float comisionCajaExtremadura,
-                           float comisionCajaRural, float comisionDeutscheBank, float comisionLiberbank,
-                           float comisionPopular, float comisionSabadell, float comisionSantander) {
+    public EntidadBancaria(int id, String entidadBancaria, double comisionBancoPopular,
+                           double comisionBancaPueyo, double comisionBankinter, double comisionBBVA,
+                           double comisionCaixa, double comisionCaixaGeral, double comisionCajaAlmendralejo,
+                           double comisionCajaBadajoz, double comisionCajaDuero, double comisionCajaExtremadura,
+                           double comisionCajaRural, double comisionDeutscheBank, double comisionLiberbank,
+                           double comisionPopular, double comisionSabadell, double comisionSantander) {
         this.id = id;
-        this.nombreEntidadBancaria = nombreEntidadBancaria;
+        this.entidadBancaria = entidadBancaria;
         this.comisionBancoPopular = comisionBancoPopular;
         this.comisionBancaPueyo = comisionBancaPueyo;
         this.comisionBankinter = comisionBankinter;
@@ -54,139 +54,139 @@ public class EntidadBancaria {
         this.id = id;
     }
 
-    public String getNombreEntidadBancaria() {
-        return nombreEntidadBancaria;
+    public String getEntidadBancaria() {
+        return entidadBancaria;
     }
 
-    public void setNombreEntidadBancaria(String nombreEntidadBancaria) {
-        this.nombreEntidadBancaria = nombreEntidadBancaria;
+    public void setEntidadBancaria(String entidadBancaria) {
+        this.entidadBancaria = entidadBancaria;
     }
 
-    public float getComisionBancoPopular() {
+    public double getComisionBancoPopular() {
         return comisionBancoPopular;
     }
 
-    public void setComisionBancoPopular(float comisionBancoPopular) {
+    public void setComisionBancoPopular(double comisionBancoPopular) {
         this.comisionBancoPopular = comisionBancoPopular;
     }
 
-    public float getComisionBancaPueyo() {
+    public double getComisionBancaPueyo() {
         return comisionBancaPueyo;
     }
 
-    public void setComisionBancaPueyo(float comisionBancaPueyo) {
+    public void setComisionBancaPueyo(double comisionBancaPueyo) {
         this.comisionBancaPueyo = comisionBancaPueyo;
     }
 
-    public float getComisionBankinter() {
+    public double getComisionBankinter() {
         return comisionBankinter;
     }
 
-    public void setComisionBankinter(float comisionBankinter) {
+    public void setComisionBankinter(double comisionBankinter) {
         this.comisionBankinter = comisionBankinter;
     }
 
-    public float getComisionBBVA() {
+    public double getComisionBBVA() {
         return comisionBBVA;
     }
 
-    public void setComisionBBVA(float comisionBBVA) {
+    public void setComisionBBVA(double comisionBBVA) {
         this.comisionBBVA = comisionBBVA;
     }
 
-    public float getComisionCaixa() {
+    public double getComisionCaixa() {
         return comisionCaixa;
     }
 
-    public void setComisionCaixa(float comisionCaixa) {
+    public void setComisionCaixa(double comisionCaixa) {
         this.comisionCaixa = comisionCaixa;
     }
 
-    public float getComisionCaixaGeral() {
+    public double getComisionCaixaGeral() {
         return comisionCaixaGeral;
     }
 
-    public void setComisionCaixaGeral(float comisionCaixaGeral) {
+    public void setComisionCaixaGeral(double comisionCaixaGeral) {
         this.comisionCaixaGeral = comisionCaixaGeral;
     }
 
-    public float getComisionCajaAlmendralejo() {
+    public double getComisionCajaAlmendralejo() {
         return comisionCajaAlmendralejo;
     }
 
-    public void setComisionCajaAlmendralejo(float comisionCajaAlmendralejo) {
+    public void setComisionCajaAlmendralejo(double comisionCajaAlmendralejo) {
         this.comisionCajaAlmendralejo = comisionCajaAlmendralejo;
     }
 
-    public float getComisionCajaBadajoz() {
+    public double getComisionCajaBadajoz() {
         return comisionCajaBadajoz;
     }
 
-    public void setComisionCajaBadajoz(float comisionCajaBadajoz) {
+    public void setComisionCajaBadajoz(double comisionCajaBadajoz) {
         this.comisionCajaBadajoz = comisionCajaBadajoz;
     }
 
-    public float getComisionCajaDuero() {
+    public double getComisionCajaDuero() {
         return comisionCajaDuero;
     }
 
-    public void setComisionCajaDuero(float comisionCajaDuero) {
+    public void setComisionCajaDuero(double comisionCajaDuero) {
         this.comisionCajaDuero = comisionCajaDuero;
     }
 
-    public float getComisionCajaExtremadura() {
+    public double getComisionCajaExtremadura() {
         return comisionCajaExtremadura;
     }
 
-    public void setComisionCajaExtremadura(float comisionCajaExtremadura) {
+    public void setComisionCajaExtremadura(double comisionCajaExtremadura) {
         this.comisionCajaExtremadura = comisionCajaExtremadura;
     }
 
-    public float getComisionCajaRural() {
+    public double getComisionCajaRural() {
         return comisionCajaRural;
     }
 
-    public void setComisionCajaRural(float comisionCajaRural) {
+    public void setComisionCajaRural(double comisionCajaRural) {
         this.comisionCajaRural = comisionCajaRural;
     }
 
-    public float getComisionDeutscheBank() {
+    public double getComisionDeutscheBank() {
         return comisionDeutscheBank;
     }
 
-    public void setComisionDeutscheBank(float comisionDeutscheBank) {
+    public void setComisionDeutscheBank(double comisionDeutscheBank) {
         this.comisionDeutscheBank = comisionDeutscheBank;
     }
 
-    public float getComisionLiberbank() {
+    public double getComisionLiberbank() {
         return comisionLiberbank;
     }
 
-    public void setComisionLiberbank(float comisionLiberbank) {
+    public void setComisionLiberbank(double comisionLiberbank) {
         this.comisionLiberbank = comisionLiberbank;
     }
 
-    public float getComisionPopular() {
+    public double getComisionPopular() {
         return comisionPopular;
     }
 
-    public void setComisionPopular(float comisionPopular) {
+    public void setComisionPopular(double comisionPopular) {
         this.comisionPopular = comisionPopular;
     }
 
-    public float getComisionSabadell() {
+    public double getComisionSabadell() {
         return comisionSabadell;
     }
 
-    public void setComisionSabadell(float comisionSabadell) {
+    public void setComisionSabadell(double comisionSabadell) {
         this.comisionSabadell = comisionSabadell;
     }
 
-    public float getComisionSantander() {
+    public double getComisionSantander() {
         return comisionSantander;
     }
 
-    public void setComisionSantander(float comisionSantander) {
+    public void setComisionSantander(double comisionSantander) {
         this.comisionSantander = comisionSantander;
     }
 }

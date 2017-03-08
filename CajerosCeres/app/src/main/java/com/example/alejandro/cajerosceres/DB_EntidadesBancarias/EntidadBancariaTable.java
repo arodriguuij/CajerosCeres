@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 
 public class EntidadBancariaTable implements BaseColumns{
     // Tabla
-    public final static String TABLA_CAJEROS = "cajeros";
+    public final static String TABLA_ENTIDADBANCARIA = "entidadBancaria";
 
     // Atributos
     final static String COLUMNA_ID = "_id";
@@ -33,7 +33,7 @@ public class EntidadBancariaTable implements BaseColumns{
             COLUMNA_comisionDeutscheBank, COLUMNA_comisionLiberbank, COLUMNA_comisionPopular,
             COLUMNA_comisionPopular, COLUMNA_comisionSabadell, COLUMNA_comisionSantander};
 
-    public static final String CREATE_QUERY = "create table " + TABLA_CAJEROS + " (" +
+    public static final String CREATE_QUERY = "create table " + TABLA_ENTIDADBANCARIA + " (" +
             COLUMNA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMNA_ENTIDADBANCARIA + " TEXT, " +
             COLUMNA_comisionBancoPopular + " TEXT, " +
@@ -53,6 +53,6 @@ public class EntidadBancariaTable implements BaseColumns{
             COLUMNA_comisionSabadell + " TEXT, " +
             COLUMNA_comisionSantander + " TEXT) " ;
 
-    public static final String DROP_QUERY = "drop table " + TABLA_CAJEROS;
-    public static final String SElECT_ALL_QUERY = "select * from " + TABLA_CAJEROS;
+    public static final String DROP_QUERY = "drop table " + TABLA_ENTIDADBANCARIA;
+    public static final String SELECT_ALL_QUERY = "select * from " + TABLA_ENTIDADBANCARIA;
 }

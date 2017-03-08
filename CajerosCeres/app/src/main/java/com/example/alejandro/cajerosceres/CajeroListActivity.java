@@ -3,6 +3,7 @@ package com.example.alejandro.cajerosceres;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.DataBaseHelperEntidadesBancarias;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.EntidadBancaria;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -34,11 +37,17 @@ import java.util.List;
 
 public class CajeroListActivity extends AppCompatActivity {
     private boolean mTwoPane;
-    public DataBaseHelperCajeros dbhelper;
+    private DataBaseHelperCajeros dbhelper;
+    private DataBaseHelperEntidadesBancarias dbhelperEB;
     private List<Cajero> cajerosArray;
     private List<Cajero> listaCajeros;
     private Boolean ingles=false;
     private Boolean libras=false;
+    private String entidadBancariaUsuario;
+    private String entidadBancariaSeleccion;
+    private EntidadBancaria e;
+    private Double comision;
+    private String aux;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,27 +69,14 @@ public class CajeroListActivity extends AppCompatActivity {
         //Obtenemos el nombre de origen que el usuario indicó
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        String entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
+        entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
+        entidadBancariaUsuario = (String) extras.get("entidadBancariaUsuarioString");
 
         switch (entidadBancariaSeleccion){
             case "Todas":
                 recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
                 break;
             default:
-                /*dbhelper = new DataBaseHelperCajeros(getBaseContext());
-                try (Cursor cur = dbhelper.getCajerosEntidadBancaria(entidadBancariaSeleccion)){
-                    if(cur.getCount()!=0) {
-                        cur.moveToFirst();
-                        while (cur.moveToNext()) {
-                            Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
-                                    , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
-                            listaCajeros.add(c);
-                        }
-                    }else
-                        Snackbar.make(recyclerView, "DB vacia", Snackbar.LENGTH_LONG).show();
-                    cur.close();
-                }
-                dbhelper.close();*/
                 int i=0;
                 while(i<cajerosArray.size()){
                     if(cajerosArray.get(i).getEntidadBancaria().equals(entidadBancariaSeleccion)){
@@ -110,12 +106,16 @@ public class CajeroListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(String.valueOf(holder.mItem.getId()+1));
+            // Entidad bancaria lista
             holder.mEntidadBancariaView.setText(mValues.get(position).getEntidadBancaria());
+
+            getEntidadBancariaUsuario();
+            getComisionEntidadBancaria(mValues.get(position).getEntidadBancaria());
+
             if(libras)
-                holder.mcomisionView.setText("1.30"+"£");
+                holder.mcomisionView.setText(comision+"£");
             else
-                holder.mcomisionView.setText("1.30"+"€");
+                holder.mcomisionView.setText(comision+"€");
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -148,7 +148,6 @@ public class CajeroListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
             public final TextView mEntidadBancariaView;
             public final TextView mcomisionView;
             public Cajero mItem;
@@ -156,10 +155,8 @@ public class CajeroListActivity extends AppCompatActivity {
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
                 mEntidadBancariaView = (TextView) view.findViewById(R.id.nombreEntidad);
                 mcomisionView = (TextView) view.findViewById(R.id.comision);
-
             }
 
             @Override
@@ -245,4 +242,74 @@ public class CajeroListActivity extends AppCompatActivity {
         }
     }
 
+    private double getComisionEntidadBancaria(String entidadBancariaLista){
+        switch(entidadBancariaLista){
+            case "BancoPopular":
+                comision=e.getComisionBancaPueyo();
+                break;
+            case "BancaPueyo":
+                comision=e.getComisionBancoPopular();
+                break;
+            case "Bankinter":
+                comision=e.getComisionBankinter();
+                break;
+            case "BBVA":
+                comision=e.getComisionBBVA();
+                break;
+            case "Caixa":
+                comision=e.getComisionCaixa();
+                break;
+            case "CaixaGeral":
+                comision=e.getComisionCaixaGeral();
+                break;
+            case "CajaAlmendralejo":
+                comision=e.getComisionCajaAlmendralejo();
+                break;
+            case "CajaBadajoz":
+                comision=e.getComisionCajaBadajoz();
+                break;
+            case "CajaDuero":
+                comision=e.getComisionCajaDuero();
+                break;
+            case "CajaExtremadura":
+                comision=e.getComisionCajaExtremadura();
+                break;
+            case "CajaRural":
+                comision=e.getComisionCajaRural();
+                break;
+            case "DeutscheBank":
+                comision=e.getComisionDeutscheBank();
+                break;
+            case "Liberban":
+                comision=e.getComisionLiberbank();
+                break;
+            case "Popular":
+                comision=e.getComisionPopular();
+                break;
+            case "Sabadell":
+                comision=e.getComisionSabadell();
+                break;
+            case "Santander":
+                comision=e.getComisionSantander();
+                break;
+        }
+        return comision;
+    }
+
+    private EntidadBancaria getEntidadBancariaUsuario(){
+        dbhelperEB = new DataBaseHelperEntidadesBancarias(getBaseContext());
+        try (Cursor cur = dbhelperEB.getCursorEntidadBancaria()){
+            while(cur.moveToNext()){
+                aux=cur.getString(1);
+                if(cur.getString(1).equals(entidadBancariaUsuario))
+                    e = new EntidadBancaria(cur.getInt(0),cur.getString(1),cur.getDouble(2)
+                            ,cur.getDouble(3),cur.getDouble(4),cur.getDouble(5),cur.getDouble(6),cur.getDouble(7)
+                            ,cur.getDouble(8),cur.getDouble(9),cur.getDouble(10),cur.getDouble(11),cur.getDouble(12),cur.getDouble(13)
+                            ,cur.getDouble(14),cur.getDouble(15),cur.getDouble(16),cur.getDouble(17));
+            }
+            cur.close();
+        }
+        dbhelperEB.close();
+        return e;
+    }
 }

@@ -43,9 +43,7 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        String id = (String) getIntent().getExtras().getString("id");
-        if (id.equals("Acceder"))
-            fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
     }
 
     @Override
@@ -109,8 +107,9 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    public void responderBusquedaMapaCajeros(String entidadBancariaString) {
+    public void responderBusquedaMapaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString) {
         Intent Intent = new Intent(getApplicationContext(), MapaActivity.class);
+        Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         if(entidadBancariaString.equals("Todas"))
             Intent.putExtra("cuantosCajeros", "todosCajeros");
         else {
@@ -120,8 +119,9 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    public void responderBusquedaListaCajeros(String entidadBancariaString) {
+    public void responderBusquedaListaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString) {
         Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
+        Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         Intent.putExtra("entidadBancariaString", entidadBancariaString);
         startActivity(Intent);
     }

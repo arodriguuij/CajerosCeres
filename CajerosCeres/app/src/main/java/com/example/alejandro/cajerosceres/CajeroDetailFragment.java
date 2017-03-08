@@ -10,11 +10,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.alejandro.cajerosceres.R.id.image;
+import static com.example.alejandro.cajerosceres.R.id.imageView;
+import android.support.v4.app.Fragment;
 
 public class CajeroDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
@@ -61,6 +68,10 @@ public class CajeroDetailFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.longitud)).setText(String.valueOf(cajero.getLongitud()));
             ((TextView) rootView.findViewById(R.id.latitud)).setText(String.valueOf(cajero.getLatitud()));
             ((TextView) rootView.findViewById(R.id.fav)).setText(String.valueOf(cajero.isFav()));
+
+            //ImageView logo= (ImageView) rootView.findViewById(R.id.imageView2);
+            //logo.setImageResource(R.drawable.ic_logo);
+            //Picasso.with(getContext()).load("http://i.imgur.com/DvpvklR.png").into(R.id.imageView2);
         }
         return rootView;
     }

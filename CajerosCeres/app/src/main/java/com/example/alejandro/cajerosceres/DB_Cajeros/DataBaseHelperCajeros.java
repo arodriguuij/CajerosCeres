@@ -25,7 +25,6 @@ public class DataBaseHelperCajeros extends SQLiteOpenHelper{
 
     public void importarCajero(Cajero c){
         ContentValues values = new ContentValues();
-        SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor test = this.getReadableDatabase().rawQuery("select * from cajeros where _id like '"+c.getId()+"'",null)){
             if(test.getCount() == 0){
                 values.put(CajeroTable.COLUMNA_ID, c.getId());
