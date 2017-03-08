@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Moneda - Por defecto: €">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:title="Libras"
-            android:key="check_box_ajustes_libras"/>
-    </PreferenceCategory>
-
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <PreferenceCategory android:title="Idioma - Por defecto: Español ">
         <CheckBoxPreference
             android:defaultValue="false"
             android:title="Ingles"
             android:key="check_box_ajustes_ingles"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Moneda - Por defecto: €">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:title="Libras"
+            android:key="check_box_ajustes_libras"/>
     </PreferenceCategory>
 </PreferenceScreen>

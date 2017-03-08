@@ -11,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -27,7 +28,7 @@ dependencies {
     })
     //compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services:10.2.0'
-    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.android.gms:play-services-location:10.2.0'
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile 'com.android.support:design:25.1.1'
@@ -35,5 +36,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.1.1'
     compile 'org.apache.httpcomponents:httpcore:4.4.1'
     compile 'org.apache.httpcomponents:httpclient:4.5'
+    compile 'com.android.support:support-vector-drawable:25.1.1'
     testCompile 'junit:junit:4.12'
 }

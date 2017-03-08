@@ -1,9 +1,7 @@
 package com.example.alejandro.cajerosceres;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,12 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
-import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MenuLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
 
@@ -52,14 +44,8 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         String id = (String) getIntent().getExtras().getString("id");
-        if (id.equals("Login"))
-            fragmentManager.beginTransaction().replace(R.id.content_main, new LoginFragment()).commit();
-        else
-            if (id.equals("Registro"))
-                fragmentManager.beginTransaction().replace(R.id.content_main, new RegistroFragment()).commit();
-            else
-                if (id.equals("ContinuarSinAcceder"))
-                    fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
+        if (id.equals("Acceder"))
+            fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
     }
 
     @Override
@@ -79,16 +65,16 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         return true;
     }
 
+    /* App bar */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (item.getItemId()) {
-            case R.id.Perfil:
-                onNavigationItemSelected(item);
-                return true;
             case R.id.action_settings:
-                getFragmentManager().beginTransaction().replace(android.R.id.content, new AjustesFragment()).addToBackStack(null).commit();
+                Intent intent = new Intent(getApplicationContext(), PrefActivity.class);
+                startActivity(intent);
+                //getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefFragment()).addToBackStack(null).commit();
                 return true;
             case R.id.Ayuda:
                 onNavigationItemSelected(item);
@@ -101,31 +87,22 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
+    /* Barra lateral */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.Buscar) {
+        if (id == R.id.Buscar)
             fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
-        } else
-            if (id == R.id.Registrarse) {
-                fragmentManager.beginTransaction().replace(R.id.content_main, new RegistroFragment()).commit();
-            } else
-                if (id == R.id.Login) {
-                    fragmentManager.beginTransaction().replace(R.id.content_main, new LoginFragment()).commit();
-                } else
-                    if (id == R.id.Perfil) {
-                        fragmentManager.beginTransaction().replace(R.id.content_main, new PerfilFragment()).commit();
-                    } else
-                        if (id == R.id.Favoritos) {
-                            fragmentManager.beginTransaction().replace(R.id.content_main, new FavoritosFragment()).commit();
-                        } else
-                            if (id == R.id.Ayuda) {
-                                fragmentManager.beginTransaction().replace(R.id.content_main, new AyudaFragment()).commit();
-                            }
+        else
+            if (id == R.id.Ayuda)
+                fragmentManager.beginTransaction().replace(R.id.content_main, new AyudaFragment()).commit();
+                else
+                    if (id == R.id.Favoritos)
+                        fragmentManager.beginTransaction().replace(R.id.content_main, new FavoritosFragment()).commit();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -147,41 +124,5 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
         Intent.putExtra("entidadBancariaString", entidadBancariaString);
         startActivity(Intent);
-    }
-
-    @Override
-    public void responderRegistro() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new LoginFragment()).commit();
-    }
-
-    @Override
-    public void responderLogin() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
-    }
-
-    @Override
-    public void responderActualizarUsuario() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
-    }
-
-    @Override
-    public void responderBorrarUsuario() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
-    }
-
-    @Override
-    public void PerfilToFavoritos() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new FavoritosFragment()).commit();
-    }
-
-    @Override
-    public void PerfilToActualizar() {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
     }
 }

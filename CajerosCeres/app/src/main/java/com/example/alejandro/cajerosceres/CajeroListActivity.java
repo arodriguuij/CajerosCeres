@@ -2,9 +2,11 @@ package com.example.alejandro.cajerosceres;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +37,8 @@ public class CajeroListActivity extends AppCompatActivity {
     public DataBaseHelperCajeros dbhelper;
     private List<Cajero> cajerosArray;
     private List<Cajero> listaCajeros;
+    private Boolean ingles=false;
+    private Boolean libras=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,10 @@ public class CajeroListActivity extends AppCompatActivity {
         }
         listaCajeros = new ArrayList<Cajero>();
 
+        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
+        ingles = sharedPref.getBoolean(PrefFragment.KEY_PREF_IDIOMA_INGLES, false);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -102,13 +110,16 @@ public class CajeroListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            //holder.mIdView.setText(mValues.get(position).getId());
-            holder.mContentView.setText(mValues.get(position).getEntidadBancaria());
+            holder.mIdView.setText(String.valueOf(holder.mItem.getId()+1));
+            holder.mEntidadBancariaView.setText(mValues.get(position).getEntidadBancaria());
+            if(libras)
+                holder.mcomisionView.setText("1.30"+"£");
+            else
+                holder.mcomisionView.setText("1.30"+"€");
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
                         arguments.putString(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId()+1));
@@ -138,19 +149,22 @@ public class CajeroListActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
-            public final TextView mContentView;
+            public final TextView mEntidadBancariaView;
+            public final TextView mcomisionView;
             public Cajero mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mEntidadBancariaView = (TextView) view.findViewById(R.id.nombreEntidad);
+                mcomisionView = (TextView) view.findViewById(R.id.comision);
+
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                return super.toString() + " '" + mEntidadBancariaView.getText() + "'";
             }
         }
     }

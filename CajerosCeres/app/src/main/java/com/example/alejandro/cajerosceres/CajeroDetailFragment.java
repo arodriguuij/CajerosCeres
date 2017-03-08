@@ -1,7 +1,9 @@
 package com.example.alejandro.cajerosceres;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
