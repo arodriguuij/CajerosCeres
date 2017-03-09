@@ -34,20 +34,55 @@ public class CajeroListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     public DataBaseHelperCajeros dbhelper;
     private List<Cajero> cajerosArray;
+    private List<Cajero> listaCajeros;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cajero_list);
-        dbhelper = new DataBaseHelperCajeros(getBaseContext());
         new HttpGetTask().execute();
         if (findViewById(R.id.cajero_detail_container) != null) {
             mTwoPane = true;
         }
+        listaCajeros = new ArrayList<Cajero>();
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
+        //Obtenemos el nombre de origen que el usuario indicó
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        String entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
+
+        switch (entidadBancariaSeleccion){
+            case "Todas":
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
+                break;
+            default:
+                /*dbhelper = new DataBaseHelperCajeros(getBaseContext());
+                try (Cursor cur = dbhelper.getCajerosEntidadBancaria(entidadBancariaSeleccion)){
+                    if(cur.getCount()!=0) {
+                        cur.moveToFirst();
+                        while (cur.moveToNext()) {
+                            Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
+                                    , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
+                            listaCajeros.add(c);
+                        }
+                    }else
+                        Snackbar.make(recyclerView, "DB vacia", Snackbar.LENGTH_LONG).show();
+                    cur.close();
+                }
+                dbhelper.close();*/
+                int i=0;
+                while(i<cajerosArray.size()){
+                    if(cajerosArray.get(i).getEntidadBancaria().equals(entidadBancariaSeleccion)){
+                        listaCajeros.add(cajerosArray.get(i));
+                    }
+                    i++;
+                }
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(listaCajeros));
+                break;
+        }
     }
 
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
@@ -83,10 +118,12 @@ public class CajeroListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CajeroDetailActivity.class);
-                        int a = holder.mItem.getId();
                         intent.putExtra(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId()+1));
-                        intent.putExtra("idCajero", holder.mItem.getId());
-
+                        intent.putExtra("entidadBancaria",holder.mItem.getEntidadBancaria());
+                        intent.putExtra("uriFotoCajero",holder.mItem.getUriFotoCajero());
+                        intent.putExtra("longitud",holder.mItem.getLongitud());
+                        intent.putExtra("latitud",holder.mItem.getLatitud());
+                        intent.putExtra("fav",holder.mItem.isFav());
                         context.startActivity(intent);
                     }
                 }
@@ -153,6 +190,8 @@ public class CajeroListActivity extends AppCompatActivity {
             cajerosArray = new ArrayList<Cajero>();
             Cajero c;
             String JSONResponse = new BasicResponseHandler().handleResponse(response);
+            dbhelper = new DataBaseHelperCajeros(getBaseContext());
+
             try {
                 // Get top-level JSON Object - a Map
                 JSONObject responseObject = (JSONObject) new JSONTokener(JSONResponse).nextValue();
@@ -187,6 +226,7 @@ public class CajeroListActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            dbhelper.close();
             return cajerosArray;
         }
     }

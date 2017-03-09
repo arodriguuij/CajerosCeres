@@ -43,11 +43,19 @@ public class DataBaseHelperCajeros extends SQLiteOpenHelper{
     }
 
     public Cursor getCursorCajero() {
-        return this.getWritableDatabase().rawQuery(CajeroTable.SELECT_ALL_QUERY, null);
+        return this.getReadableDatabase().rawQuery(CajeroTable.SELECT_ALL_QUERY, null);
     }
 
     public Cursor getCajero(Integer idCajero) {
-        try ( Cursor test = this.getReadableDatabase().rawQuery("select * from VIAJES where COLUMNA_ID like '"+idCajero+"'",null)) {
+        try ( Cursor test = this.getReadableDatabase().rawQuery("select * from cajeros where _id like '"+idCajero+"'",null)) {
+            if (test.getCount() != 0)
+                return test;
+        }
+        return null;
+    }
+
+    public Cursor getCajerosEntidadBancaria(String entidadBancariaSeleccion) {
+        try ( Cursor test = this.getWritableDatabase().rawQuery("select * from cajeros where entidadBancaria like '"+entidadBancariaSeleccion+"'",null)) {
             if (test.getCount() != 0)
                 return test;
         }

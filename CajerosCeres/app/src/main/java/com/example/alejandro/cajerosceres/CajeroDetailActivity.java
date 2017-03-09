@@ -23,7 +23,23 @@ public class CajeroDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                //Snackbar.make(view, "Ir al mapa", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                Intent intentMapa = new Intent(getApplicationContext(), MapaActivity.class);
+
+                Intent intent = getIntent();
+                Bundle extras = intent.getExtras();
+                String entidadBancaria = (String) extras.get("entidadBancaria");
+                double longitud = (double) extras.get("longitud");
+                double latitud = (double) extras.get("latitud");
+                String uriFotoCajero = (String) extras.get("uriFotoCajero");
+
+                intentMapa.putExtra("entidadBancaria", entidadBancaria);
+                intentMapa.putExtra("longitud", longitud);
+                intentMapa.putExtra("latitud", latitud);
+                intentMapa.putExtra("uriFotoCajero", uriFotoCajero);
+                intentMapa.putExtra("cuantosCajeros", "unCajero");
+
+                startActivity(intentMapa);
             }
         });
 
@@ -33,7 +49,6 @@ public class CajeroDetailActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-
             Bundle arguments = new Bundle();
             arguments.putString(CajeroDetailFragment.ARG_ITEM_ID,getIntent().getStringExtra(CajeroDetailFragment.ARG_ITEM_ID));
             CajeroDetailFragment fragment = new CajeroDetailFragment();

@@ -1,7 +1,9 @@
 package com.example.alejandro.cajerosceres;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -14,6 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
+import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
 
@@ -124,14 +132,20 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    public void responderBusquedaMapaCajeros() {
+    public void responderBusquedaMapaCajeros(String entidadBancariaString) {
         Intent Intent = new Intent(getApplicationContext(), MapaActivity.class);
+        if(entidadBancariaString.equals("Todas"))
+            Intent.putExtra("cuantosCajeros", "todosCajeros");
+        else {
+            Intent.putExtra("cuantosCajeros", entidadBancariaString);
+        }
         startActivity(Intent);
     }
 
     @Override
-    public void responderBusquedaListaCajeros() {
+    public void responderBusquedaListaCajeros(String entidadBancariaString) {
         Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
+        Intent.putExtra("entidadBancariaString", entidadBancariaString);
         startActivity(Intent);
     }
 

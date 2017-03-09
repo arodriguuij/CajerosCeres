@@ -17,7 +17,7 @@ import java.util.List;
 public class CajeroDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
     private Cajero cajero;
-    private List<Cajero> listaCajeros = new ArrayList<Cajero>();
+    private List<Cajero> listaCajeros;
     private DataBaseHelperCajeros dbhelper;
 
     public CajeroDetailFragment() { }
@@ -25,9 +25,7 @@ public class CajeroDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = getActivity().getIntent().getExtras();
-        String valorRecibido= getActivity().getIntent().getStringExtra("idCajero");
-
+        listaCajeros = new ArrayList<Cajero>();
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Obtener los Cajeros de la base de datos y meterlos en una lista
             dbhelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
@@ -37,7 +35,9 @@ public class CajeroDetailFragment extends Fragment {
                             ,cur.getDouble(3),cur.getDouble(4),cur.getString(5),cur.getInt(6));
                     listaCajeros.add( c);
                 }
+                cur.close();
             }
+            dbhelper.close();
 
             cajero = listaCajeros.get(Integer.valueOf(getArguments().getString(ARG_ITEM_ID))-1);
 
@@ -50,14 +50,16 @@ public class CajeroDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.cajero_detail, container, false);
 
         if (cajero != null) {
-            ((TextView) rootView.findViewById(R.id.cajero_detail)).setText(cajero.getEntidadBancaria());
+            ((TextView) rootView.findViewById(R.id.entidadBancaria)).setText(cajero.getEntidadBancaria());
+            ((TextView) rootView.findViewById(R.id.uriFotoCajero)).setText(cajero.getUriFotoCajero());
+            ((TextView) rootView.findViewById(R.id.longitud)).setText(String.valueOf(cajero.getLongitud()));
+            ((TextView) rootView.findViewById(R.id.latitud)).setText(String.valueOf(cajero.getLatitud()));
+            ((TextView) rootView.findViewById(R.id.fav)).setText(String.valueOf(cajero.isFav()));
         }
-
         return rootView;
     }
 }

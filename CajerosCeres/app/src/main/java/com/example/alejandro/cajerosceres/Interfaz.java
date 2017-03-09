@@ -2,8 +2,8 @@ package com.example.alejandro.cajerosceres;
 
 public interface Interfaz {
 
-    public void responderBusquedaMapaCajeros();
-    public void responderBusquedaListaCajeros();
+    public void responderBusquedaMapaCajeros(String entidadBancariaString);
+    public void responderBusquedaListaCajeros(String entidadBancariaString);
     public void responderRegistro();
     public void responderLogin();
     public void responderActualizarUsuario();
