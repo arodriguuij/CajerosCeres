@@ -14,4 +14,10 @@
             android:title="Libras"
             android:key="check_box_ajustes_libras"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="Actualizar cajeros en 2º plano">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:title="servicio"
+            android:key="check_box_ajustes_servicio"/>
+    </PreferenceCategory>
 </PreferenceScreen>

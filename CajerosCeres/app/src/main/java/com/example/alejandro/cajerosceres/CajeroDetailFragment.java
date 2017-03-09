@@ -1,27 +1,24 @@
 package com.example.alejandro.cajerosceres;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.preference.PreferenceManager;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.alejandro.cajerosceres.R.id.image;
-import static com.example.alejandro.cajerosceres.R.id.imageView;
-import android.support.v4.app.Fragment;
 
 public class CajeroDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
@@ -35,6 +32,7 @@ public class CajeroDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         listaCajeros = new ArrayList<Cajero>();
+
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Obtener los Cajeros de la base de datos y meterlos en una lista
             dbhelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
@@ -53,7 +51,7 @@ public class CajeroDetailFragment extends Fragment {
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle("CajerosCeres");
+                appBarLayout.setTitle(cajero.getEntidadBancaria());
             }
         }
     }
@@ -62,12 +60,33 @@ public class CajeroDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.cajero_detail, container, false);
 
+        FloatingActionButton favButton = (FloatingActionButton) rootView.findViewById(R.id.favButton);
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbhelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
+                if(cajero.isFav()==0) {
+                    dbhelper.setFavoritoCajero(cajero.getId(), 1);
+                    Toast.makeText(getActivity(),"Añadido a favoritos!",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    dbhelper.setFavoritoCajero(cajero.getId(), 0);
+                    Toast.makeText(getActivity(),"Eliminado de favoritos!",Toast.LENGTH_SHORT).show();
+                }
+                dbhelper.close();
+            }
+        });
+
         if (cajero != null) {
             ((TextView) rootView.findViewById(R.id.entidadBancaria)).setText(cajero.getEntidadBancaria());
             ((TextView) rootView.findViewById(R.id.uriFotoCajero)).setText(cajero.getUriFotoCajero());
             ((TextView) rootView.findViewById(R.id.longitud)).setText(String.valueOf(cajero.getLongitud()));
             ((TextView) rootView.findViewById(R.id.latitud)).setText(String.valueOf(cajero.getLatitud()));
-            ((TextView) rootView.findViewById(R.id.fav)).setText(String.valueOf(cajero.isFav()));
+            if(cajero.isFav()==0)
+                ((TextView) rootView.findViewById(R.id.fav)).setText("No");
+            else
+                ((TextView) rootView.findViewById(R.id.fav)).setText("Sí");
+
 
             //ImageView logo= (ImageView) rootView.findViewById(R.id.imageView2);
             //logo.setImageResource(R.drawable.ic_logo);

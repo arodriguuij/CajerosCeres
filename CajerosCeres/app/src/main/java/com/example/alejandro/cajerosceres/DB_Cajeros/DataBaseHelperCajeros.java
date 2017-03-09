@@ -61,6 +61,16 @@ public class DataBaseHelperCajeros extends SQLiteOpenHelper{
         return null;
     }
 
+    public boolean setFavoritoCajero(Integer idCajero, int favorito){
+        ContentValues values = new ContentValues();
+        try (Cursor test = this.getReadableDatabase().rawQuery("UPDATE cajeros SET fav = '"+ favorito +"' where _id like '"+ idCajero +"'",null)) {
+            if (test.getCount() != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void onRestar() {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         sqLiteDatabase.execSQL(CajeroTable.DROP_QUERY);

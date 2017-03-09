@@ -24,14 +24,6 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
         // Detecta eventos abiertos y cerrados del menu lateral
         //Extiende de la clase ActionBarDrawerToggle al incluir una actionBar
@@ -72,7 +64,6 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
             case R.id.action_settings:
                 Intent intent = new Intent(getApplicationContext(), PrefActivity.class);
                 startActivity(intent);
-                //getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefFragment()).addToBackStack(null).commit();
                 return true;
             case R.id.Ayuda:
                 onNavigationItemSelected(item);
@@ -119,10 +110,11 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    public void responderBusquedaListaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString) {
+    public void responderBusquedaListaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString, String orden) {
         Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
         Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         Intent.putExtra("entidadBancariaString", entidadBancariaString);
+        Intent.putExtra("orden", orden);
         startActivity(Intent);
     }
 }

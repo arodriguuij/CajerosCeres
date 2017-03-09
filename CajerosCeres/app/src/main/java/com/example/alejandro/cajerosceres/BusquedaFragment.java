@@ -1,6 +1,8 @@
 package com.example.alejandro.cajerosceres;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-
-import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
 
 public class BusquedaFragment extends Fragment {
     private Button buttonMapaCajeros;
@@ -36,6 +36,8 @@ public class BusquedaFragment extends Fragment {
         buttonMapaCajeros = (Button) view.findViewById(R.id.buttonMapaCajeros);
         entidadBancaria = (Spinner) view.findViewById(R.id.spinner);
         entidadBancariaUsuario = (Spinner) view.findViewById(R.id.spinnerEntidadBancariaUsuario);
+        // Nos dá la actividad asociada a este fragmento
+        comunicacion=(Interfaz) getActivity();
 
         ArrayAdapter<CharSequence> adapter2 = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
         for (int i = 0; i < entidadUsuario.length; i++)
@@ -51,6 +53,14 @@ public class BusquedaFragment extends Fragment {
         entidadBancaria.setAdapter(adapter);
         entidadBancaria.setOnItemSelectedListener(selectListener1);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"ranking");
+            }
+        });
+
         return view;
     }
 
@@ -63,8 +73,6 @@ public class BusquedaFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Nos dá la actividad asociada a este fragmento
-        comunicacion=(Interfaz) getActivity();
         buttonMapaCajeros.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 comunicacion.responderBusquedaMapaCajeros(entidadBancariaString,entidadBancariaUsuarioString);
@@ -72,17 +80,9 @@ public class BusquedaFragment extends Fragment {
         });
         buttonListaCajeros.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
-                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString);
+                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"desordenado");
             }
         });
-        /*
-        buttonActualizarCajeros.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View v){
-                dbHelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
-                dbHelper.onRestar();
-                dbHelper.close();
-            }
-        });*/
     }
 
     private AdapterView.OnItemSelectedListener selectListener2 = new AdapterView.OnItemSelectedListener() {
@@ -100,26 +100,4 @@ public class BusquedaFragment extends Fragment {
         }
         public void onNothingSelected(AdapterView arg0) {}
     };
-/*
-public class intro extends AppCompatActivity {
-    private static final long SPLASH_TIME=4000;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.intro);
-
-        TimerTask task=new TimerTask() {
-            @Override
-            public void run() {
-                Intent mainIntent=new Intent().setClass(intro.this,main.class);
-                startActivity(mainIntent);
-                finish();
-            }
-        };
-        Timer timer=new Timer();
-        timer.schedule(task,SPLASH_TIME);
-    }
-}
-
- */
 }

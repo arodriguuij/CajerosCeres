@@ -12,7 +12,9 @@ import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.EntidadBancaria;
 
 public class HomeActivity extends AppCompatActivity {
     private Button buttonAcceder;
+    private Button buttonStopServicio;
     private DataBaseHelperEntidadesBancarias dbhelper;
+    private boolean servicioON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,14 +26,37 @@ public class HomeActivity extends AppCompatActivity {
 
     public void inicializarComponentes() {
         buttonAcceder = (Button) findViewById(R.id.buttonAcceder);
+        buttonStopServicio = (Button) findViewById(R.id.buttonStopServicio);
+
         buttonAcceder.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), MenuLateral.class);
+
+                //PreferenceManager.setDefaultValues(getBaseContext(), R.xml.ajustes, false);
+                //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                //servicioON = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
+                //if(servicioON)
+                    startService(new Intent(HomeActivity.this, ActualizarService.class));
+                //else
+                //    stopService(new Intent(HomeActivity.this, ActualizarService.class));
+
                 crearTablaComisiones();
                 startActivity(intent);
             }
         });
+        buttonStopServicio.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MenuLateral.class);
+
+                stopService(new Intent(HomeActivity.this, ActualizarService.class));
+
+                //crearTablaComisiones();
+                startActivity(intent);
+            }
+        });
+
     }
+
 
     private void crearTablaComisiones(){
         try (Cursor cur = dbhelper.getCursorEntidadBancaria()){
