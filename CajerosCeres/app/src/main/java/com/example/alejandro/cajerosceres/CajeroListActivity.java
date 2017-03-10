@@ -29,7 +29,6 @@ public class CajeroListActivity extends AppCompatActivity {
     private DataBaseHelperCajeros dbhelper;
     private DataBaseHelperEntidadesBancarias dbhelperEB;
     private List<Cajero> cajerosArray;
-    private Boolean ingles=false;
     private Boolean libras=false;
     private String entidadBancariaUsuario;
     private String entidadBancariaSeleccion;
@@ -48,12 +47,9 @@ public class CajeroListActivity extends AppCompatActivity {
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
-
-
         PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
-        ingles = sharedPref.getBoolean(PrefFragment.KEY_PREF_IDIOMA_INGLES, false);
     }
 
 
@@ -80,6 +76,8 @@ public class CajeroListActivity extends AppCompatActivity {
         }
         if(orden.equals("ranking"))
             burbuja();
+        if(orden.equals("favoritos"))
+            favoritos();
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
     }
 
@@ -172,6 +170,21 @@ public class CajeroListActivity extends AppCompatActivity {
                     asignarCajero(cajerosArray.get(j+1),cajerosArray.get(j));
                     asignarCajero(cajerosArray.get(j),aux);
                 }
+    }
+
+    public void favoritos(){
+        cajerosArray = new ArrayList<Cajero>();
+        dbhelper = new DataBaseHelperCajeros(getBaseContext());
+        try (Cursor cur = dbhelper.getCursorCajero()){
+            while(cur.moveToNext()){
+                Cajero c = new Cajero(cur.getInt(0),cur.getString(1),cur.getString(2)
+                        ,cur.getDouble(3),cur.getDouble(4),cur.getString(5),cur.getInt(6));
+                if(c.isFav()==1)
+                    cajerosArray.add(c);
+            }
+            cur.close();
+        }
+        dbhelper.close();
     }
 
     public void asignarCajero(Cajero aux,Cajero aux2){

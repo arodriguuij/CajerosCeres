@@ -1,6 +1,5 @@
 package com.example.alejandro.cajerosceres;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,8 @@ import android.widget.Spinner;
 public class BusquedaFragment extends Fragment {
     private Button buttonMapaCajeros;
     private Button buttonListaCajeros;
+    private Button buttonListaCajerosRanking;
+    private Button buttonListaCajerosFavoritos;
     private Interfaz comunicacion;
     private Spinner entidadBancaria;
     private Spinner entidadBancariaUsuario;
@@ -34,6 +35,8 @@ public class BusquedaFragment extends Fragment {
         View view = inflater.inflate(R.layout.busqueda_fragment, container, false);
         buttonListaCajeros = (Button) view.findViewById(R.id.buttonListaCajeros);
         buttonMapaCajeros = (Button) view.findViewById(R.id.buttonMapaCajeros);
+        buttonListaCajerosRanking = (Button) view.findViewById(R.id.buttonRanking);
+        buttonListaCajerosFavoritos = (Button) view.findViewById(R.id.buttonFavoritos);
         entidadBancaria = (Spinner) view.findViewById(R.id.spinner);
         entidadBancariaUsuario = (Spinner) view.findViewById(R.id.spinnerEntidadBancariaUsuario);
         // Nos dá la actividad asociada a este fragmento
@@ -52,15 +55,6 @@ public class BusquedaFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         entidadBancaria.setAdapter(adapter);
         entidadBancaria.setOnItemSelectedListener(selectListener1);
-
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"ranking");
-            }
-        });
-
         return view;
     }
 
@@ -81,6 +75,16 @@ public class BusquedaFragment extends Fragment {
         buttonListaCajeros.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View v){
                 comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"desordenado");
+            }
+        });
+        buttonListaCajerosRanking.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View v){
+                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"ranking");
+            }
+        });
+        buttonListaCajerosFavoritos.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View v){
+                comunicacion.responderBusquedaListaCajeros(entidadBancariaString,entidadBancariaUsuarioString,"favoritos");
             }
         });
     }
