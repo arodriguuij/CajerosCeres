@@ -97,7 +97,7 @@ public class CajeroListActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
             // Entidad bancaria lista
-            holder.mEntidadBancariaView.setText(mValues.get(position).getEntidadBancaria());
+            holder.mEntidadBancariaView.setText("Cajero "+mValues.get(position).getEntidadBancaria());
 
             getEntidadBancariaUsuario();
             getComisionEntidadBancaria(mValues.get(position).getEntidadBancaria());

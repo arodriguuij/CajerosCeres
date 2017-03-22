@@ -60,19 +60,19 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewEntidadBancariaFIltro"
             android:layout_marginTop="16dp"
-            app:layout_constraintHorizontal_bias="0.43" />
+            app:layout_constraintHorizontal_bias="0.52" />
 
         <Button
             android:text="Mapa cajeros en Cáceres"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/buttonMapaCajeros"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/buttonListaCajeros"
             android:layout_marginEnd="16dp"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginStart="16dp"
-            app:layout_constraintLeft_toLeftOf="parent" />
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
         <Button
             android:text="Lista cajeros en Cáceres"
@@ -84,32 +84,32 @@
             android:layout_marginStart="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/spinner" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonMapaCajeros" />
 
         <Button
-            android:text="Favoritos"
+            android:text="LISTA CAJEROS FAVORITOS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/buttonFavoritos"
-            android:layout_marginStart="50dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginEnd="50dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/buttonRanking" />
-
-        <Button
-            android:text="Ranking"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/buttonRanking"
+            android:layout_marginEnd="16dp"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginStart="16dp"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/buttonMapaCajeros"
-            android:layout_marginEnd="16dp" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonRanking" />
+
+        <Button
+            android:text="LISTA CAJEROS ORDENADOS POR COMISION"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonRanking"
+            android:layout_marginStart="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.45"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/buttonListaCajeros" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

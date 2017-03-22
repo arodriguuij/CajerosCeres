@@ -11,11 +11,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,18 +81,9 @@ public class CajeroDetailFragment extends Fragment {
 
         if (cajero != null) {
             ((TextView) rootView.findViewById(R.id.entidadBancaria)).setText(cajero.getEntidadBancaria());
-            ((TextView) rootView.findViewById(R.id.uriFotoCajero)).setText(cajero.getUriFotoCajero());
-            ((TextView) rootView.findViewById(R.id.longitud)).setText(String.valueOf(cajero.getLongitud()));
-            ((TextView) rootView.findViewById(R.id.latitud)).setText(String.valueOf(cajero.getLatitud()));
-            if(cajero.isFav()==0)
-                ((TextView) rootView.findViewById(R.id.fav)).setText("No");
-            else
-                ((TextView) rootView.findViewById(R.id.fav)).setText("Sí");
 
-
-            //ImageView logo= (ImageView) rootView.findViewById(R.id.imageView2);
-            //logo.setImageResource(R.drawable.ic_logo);
-            //Picasso.with(getContext()).load("http://i.imgur.com/DvpvklR.png").into(R.id.imageView2);
+            ImageView logo= (ImageView) rootView.findViewById(R.id.imageView2);
+            Picasso.with(getContext()).load(cajero.getUriFotoCajero()).into(logo);
         }
         return rootView;
     }

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class MenuLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
+    private Interfaz comunicacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +90,9 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
             if (id == R.id.Ayuda)
                 fragmentManager.beginTransaction().replace(R.id.content_main, new AyudaFragment()).commit();
                 else
-                    if (id == R.id.Favoritos)
-                        fragmentManager.beginTransaction().replace(R.id.content_main, new FavoritosFragment()).commit();
+                    if (id == R.id.Favoritos) {
+                        responderBusquedaListaCajeros("Todas", "BancoPopular", "favoritos");
+                    }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
         drawer.closeDrawer(GravityCompat.START);

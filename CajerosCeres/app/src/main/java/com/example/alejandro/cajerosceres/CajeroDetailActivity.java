@@ -13,8 +13,6 @@ import android.view.View;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
 
 public class CajeroDetailActivity extends AppCompatActivity {
-    private DataBaseHelperCajeros dbhelper;
-    private Interfaz comunicacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,48 +45,7 @@ public class CajeroDetailActivity extends AppCompatActivity {
                 startActivity(intentMapa);
             }
         });
-/*
-        FloatingActionButton fav = (FloatingActionButton) findViewById(R.id.fav);
-        fav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "¿Añadir a favoritos?", Snackbar.LENGTH_LONG)
-                        .setAction("Añadir", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
 
-                                Intent intent2 = new Intent(getApplicationContext(), CajeroListActivity.class);
-                                Intent intent = getIntent();
-
-                                Bundle extras = intent.getExtras();
-                                Integer id = (Integer) extras.get("id");
-
-                                dbhelper = new DataBaseHelperCajeros(getApplicationContext());
-                                dbhelper.setFavoritoCajero(id, 1);
-                                dbhelper.close();
-
-                                intent2.putExtra("viaje_origen", (String) extras.get("viaje_origen"));
-                                intent2.putExtra("viaje_destino", (String) extras.get("viaje_destino"));
-                                navigateUpTo(intent2);
-
-
-                                Intent intent = getIntent();
-                                Bundle extras = intent.getExtras();
-                                String entidadBancariaSeleccion= (String) extras.get("entidadBancariaSeleccion");
-                                String entidadBancariaUsuario= (String) extras.get("entidadBancariaUsuario");
-                                String orden= (String) extras.get("orden");
-
-
-                                Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
-                                Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaSeleccion);
-                                Intent.putExtra("entidadBancariaString", entidadBancariaUsuario);
-                                Intent.putExtra("orden", orden);
-                                startActivity(Intent);
-                            }
-                        }).show();
-            }
-        });
-*/
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

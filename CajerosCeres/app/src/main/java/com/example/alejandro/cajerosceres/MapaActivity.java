@@ -203,7 +203,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             // other 'case' lines to check for other permissions this app might request
         }
-    }
+    }/*
 
     public boolean checkLocationPermission(){
         String permission = "android.permission.ACCESS_FINE_LOCATION";
