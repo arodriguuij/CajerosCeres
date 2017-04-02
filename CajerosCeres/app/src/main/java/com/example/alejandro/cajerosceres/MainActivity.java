@@ -1,38 +1,36 @@
 package com.example.alejandro.cajerosceres;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-public class MenuLateral extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
-    private Interfaz comunicacion;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.menu_lateral);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.main_layout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMainActivity);
+        toolbar.setTitle("CajerosCeres");
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
+        android.support.v4.widget.DrawerLayout drawer = (android.support.v4.widget.DrawerLayout) findViewById(R.id.drawerLayout);
         // Detecta eventos abiertos y cerrados del menu lateral
-        //Extiende de la clase ActionBarDrawerToggle al incluir una actionBar
+        // Extiende de la clase ActionBarDrawerToggle al incluir una actionBar
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_drawer_header);
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -41,7 +39,7 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
+        android.support.v4.widget.DrawerLayout drawer = (android.support.v4.widget.DrawerLayout) findViewById(R.id.drawerLayout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -94,7 +92,7 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
                         responderBusquedaListaCajeros("Todas", "BancoPopular", "favoritos");
                     }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.menu_lateral);
+        android.support.v4.widget.DrawerLayout drawer = (android.support.v4.widget.DrawerLayout) findViewById(R.id.drawerLayout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -117,6 +115,24 @@ public class MenuLateral extends AppCompatActivity implements NavigationView.OnN
         Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         Intent.putExtra("entidadBancariaString", entidadBancariaString);
         Intent.putExtra("orden", orden);
-        startActivity(Intent);
+
+        guardarConfiguracion(entidadBancariaUsuarioString, entidadBancariaString, orden);
+        /*
+        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
+        */
+                startActivity(Intent);
     }
+
+    //guardar configuración aplicación Android usando SharedPreferences
+    public void guardarConfiguracion(String entidadBancariaUsuarioString, String entidadBancariaString, String orden) {
+        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", this.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("entidadBancariaUsuarioString",entidadBancariaUsuarioString);
+        editor.putString("entidadBancariaString", entidadBancariaString);
+        editor.putString("orden", orden);
+        editor.commit();
+    }
+
 }

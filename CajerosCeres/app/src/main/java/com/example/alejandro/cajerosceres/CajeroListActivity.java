@@ -7,10 +7,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,14 +34,20 @@ public class CajeroListActivity extends AppCompatActivity {
     private String orden;
     private EntidadBancaria e;
     private Double comision;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cajero_list);
-        if (findViewById(R.id.cajero_detail_container) != null) {
+
+        toolbar = (Toolbar) findViewById(R.id.toolbarMainActivity_list);
+        toolbar.setTitle("Lista de cajeros");
+        setSupportActionBar(toolbar);
+
+        /*if (findViewById(R.id.cajero_detail_container) != null) {
             mTwoPane = true;
-        }
+        }*/
         View recyclerView = findViewById(R.id.cajero_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
@@ -50,8 +55,23 @@ public class CajeroListActivity extends AppCompatActivity {
         PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
+
+        cargarConfiguracion();
     }
 
+
+    //cargar configuración aplicación Android usando SharedPreferences
+    public void cargarConfiguracion(){
+        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
+        entidadBancariaSeleccion = prefs.getString("entidadBancariaUsuarioString", "");
+        entidadBancariaUsuario = prefs.getString("entidadBancariaString", "");
+        orden = prefs.getString("orden", "");
+/*
+        imageButtonFav.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            }
+        });*/
+    }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         //Obtenemos el nombre de origen que el usuario indicó
@@ -74,10 +94,12 @@ public class CajeroListActivity extends AppCompatActivity {
                 recuperarCajerosEntidadBancaria();
                 break;
         }
-        if(orden.equals("ranking"))
+        if(orden.equals("ranking")) {
             burbuja();
-        if(orden.equals("favoritos"))
+        }
+        if(orden.equals("favoritos")) {
             favoritos();
+        }
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
     }
 
@@ -106,17 +128,38 @@ public class CajeroListActivity extends AppCompatActivity {
                 holder.mcomisionView.setText(comision+"£");
             else
                 holder.mcomisionView.setText(comision+"€");
+/*
+            if(holder.mItem.isFav()==1)
+                holder.mBtnBotonMasImagen.setImageAlpha(R.mipmap.star_on);
+            else
+                holder.mBtnBotonMasImagen.setImageAlpha(R.mipmap.star_off);
+
+            holder.mBtnToggle.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if(holder.mItem.isFav()==0){ //no Fav
+                        holder.mItem.setFav(1);
+                        holder.mBtnToggle.setChecked(true);
+                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+" añadido a favoritos", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        holder.mItem.setFav(0);
+                        holder.mBtnToggle.setChecked(false);
+                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+" eliminado de favoritos", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+*/
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mTwoPane) {
+                    /*if (mTwoPane) {
                         Bundle arguments = new Bundle();
                         arguments.putString(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId()+1));
                         CajeroDetailFragment fragment = new CajeroDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction().replace(R.id.cajero_detail_container, fragment).commit();
-                    } else {
+                    } else {*/
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CajeroDetailActivity.class);
                         intent.putExtra(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId()+1));
@@ -130,7 +173,7 @@ public class CajeroListActivity extends AppCompatActivity {
                         intent.putExtra("entidadBancariaUsuario",entidadBancariaUsuario);
                         intent.putExtra("orden",orden);
                         context.startActivity(intent);
-                    }
+                    //}
                 }
             });
         }
@@ -144,6 +187,7 @@ public class CajeroListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mEntidadBancariaView;
             public final TextView mcomisionView;
+            //public final ImageButton mImageButtonFav;
             public Cajero mItem;
 
             public ViewHolder(View view) {
@@ -151,6 +195,7 @@ public class CajeroListActivity extends AppCompatActivity {
                 mView = view;
                 mEntidadBancariaView = (TextView) view.findViewById(R.id.nombreEntidad);
                 mcomisionView = (TextView) view.findViewById(R.id.comision);
+                //mImageButtonFav = (ImageButton) findViewById(R.id.imageButtonFav);
             }
 
             @Override
@@ -196,6 +241,7 @@ public class CajeroListActivity extends AppCompatActivity {
         aux.setLongitud(aux2.getLongitud());
         aux.setFav(aux2.isFav());
     }
+
     private void recuperarTodosCajeros(){
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
         cajerosArray = new ArrayList<Cajero>();
@@ -225,6 +271,7 @@ public class CajeroListActivity extends AppCompatActivity {
         }
         dbhelper.close();
     }
+
     private double getComisionEntidadBancaria(String entidadBancariaLista){
         switch(entidadBancariaLista){
             case "BancoPopular":        comision=e.getComisionBancaPueyo();         break;

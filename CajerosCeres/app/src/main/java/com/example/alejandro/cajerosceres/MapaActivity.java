@@ -1,32 +1,20 @@
 package com.example.alejandro.cajerosceres;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.EventLogTags;
-import android.util.Log;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,7 +25,6 @@ import java.util.List;
 // Clave de API 1	5 mar. 2017	Ninguna	AIzaSyAa-XMZqW0X2FGWOeAZbCnnkj2rYF9uunI
 
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private static final int MY_PERMISSION_LOCATION = 1337;
     private DataBaseHelperCajeros dbhelper;
     private GoogleMap mapa;
     private double longitud;
@@ -51,14 +38,21 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<Cajero> listaCajerosEntidad;
     private String cuantosCajeros;
     private BitmapDescriptor icon;
-
+    private LocationManager mLocMgr;
+    private double latitudYo;
+    private double longitudYo;
+/*
+    //Minimo tiempo para updates en Milisegundos
+    private static final long MIN_CAMBIO_DISTANCIA_PARA_UPDATES = 10; // 10 metros
+    //Minimo tiempo para updates en Milisegundos
+    private static final long MIN_TIEMPO_ENTRE_UPDATES = 1000 * 60 * 1; // 1 minuto
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_fragment);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
 
         //Obtenemos las coordenadas del Cajero
@@ -106,6 +100,21 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
         }
         dbhelper.close();
+
+		/* Use the LocationManager class to obtain GPS locations */
+/*        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        MyLocationListener mlocListener = new MyLocationListener();
+        mlocListener.setMapaActivity(this);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Requiere permisos para Android 6.0
+            System.out.println("---------------------------------------- No se tienen permisos necesarios!, se requieren.----------------------------------------");
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
+            return;
+        }else {
+            // 10 metros, 100*60*1 1 minuto
+            mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 100*60*1, mlocListener);
+        }*/
     }
 
     @Override
@@ -113,6 +122,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapa = map;
         MarkerOptions markerOptions = new MarkerOptions();
         LatLng ciudadCaceres = new LatLng(39.4752169, -6.372337600000037);
+        //LatLng yo = new LatLng(latitudYo, longitudYo);
+        //mapa.addMarker(new MarkerOptions().position(yo).title("Mi posición").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
 
         //miUbicacion();
 
@@ -148,108 +159,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
         }
         dbhelper.close();
-
     }
-
-
-
-    private void agregarMarcador(double lat, double lng) {
-        LatLng ubicacionUsuario = new LatLng(latitudUsuario, longitudUsuario);
-        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacionUsuario, 14));
-        marcador = mapa.addMarker(new MarkerOptions().position(ubicacionUsuario).title("Mi posición").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));
-    }
-
-    private void actualizarUbicacion(Location location) {
-        if (location != null) {
-            latitudUsuario = location.getLatitude();
-            longitudUsuario = location.getLongitude();
-            agregarMarcador(latitudUsuario, longitudUsuario);
-        }
-    }
-
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            actualizarUbicacion(location);
-        }
-    };
-/*
-    private void miUbicacion() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            return;
-        }
-            mapa.setMyLocationEnabled(true);
-            //mapa.getUiSettings().setMyLocationButtonEnabled(true);
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            actualizarUbicacion(location);
-            // 15000 = cada 15 segundos
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, (android.location.LocationListener) locationListener);
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    // permission denied, boo! Disable the functionality that depends on this permission.
-                }
-                return;
-            }
-            // other 'case' lines to check for other permissions this app might request
-        }
-    }/*
-
-    public boolean checkLocationPermission(){
-        String permission = "android.permission.ACCESS_FINE_LOCATION";
-        int res = this.checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-    /*
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == TAG_CODE_PERMISSION_LOCATION) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //Permiso concedido
-
-
-            } else {
-                //Permiso denegado:
-                //Deberíamos deshabilitar toda la funcionalidad relativa a la localización.
-            }
-        }
-    }
-
-*/
-    private void miUbicacion() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && this.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && this.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSION_LOCATION);
-        } else {
-            //   gps functions.
-            mapa.setMyLocationEnabled(true);
-            //mapa.getUiSettings().setMyLocationButtonEnabled(true);
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            actualizarUbicacion(location);
-            // 15000 = cada 15 segundos
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, (android.location.LocationListener) locationListener);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions, int[] grantResults) {
-        if (requestCode == MY_PERMISSION_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //  gps functionality
-        }
-    }
-
 
     private void getComisionEntidadBancaria(String entidadBancariaLista) {
         switch (entidadBancariaLista) {
@@ -271,4 +181,70 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             case "Santander":       icon = BitmapDescriptorFactory.fromResource(R.mipmap.santander);break;
         }
     }
+
+    public class MyLocationListener implements android.location.LocationListener {
+        MapaActivity mapaActivity;
+
+        public MapaActivity getMainActivity() {
+            return mapaActivity;
+        }
+
+        public void setMapaActivity(MapaActivity mapaActivity) {
+            this.mapaActivity = mapaActivity;
+        }
+
+        @Override
+        public void onLocationChanged(Location loc) {
+            // Este metodo se ejecuta cada vez que el GPS recibe nuevas coordenadas debido a la deteccin de un cambio de ubicacion
+            latitudYo=loc.getLatitude();
+            longitudYo=loc.getLongitude();
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            // Este metodo se ejecuta cuando el GPS es desactivado
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            // Este metodo se ejecuta cuando el GPS es activado
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            // Este metodo se ejecuta cada vez que se detecta un cambio en el status del proveedor de localizacion (GPS)
+            // Los diferentes Status son:
+            // OUT_OF_SERVICE -> Si el proveedor esta fuera de servicio
+            // TEMPORARILY_UNAVAILABLE -> Tempralmente no disponible pero se espera que este disponible en breve
+            // AVAILABLE -> Disponible
+        }
+
+    }
 }
+
+/*
+        mLocMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Requiere permisos para Android 6.0
+            System.out.println("---------------------------------------- No se tienen permisos necesarios!, se requieren.----------------------------------------");
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
+            return;
+        }else{
+            System.out.println("---------------------------------------- Permisos necesarios OK!. ----------------------------------------");
+            mLocMgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIEMPO_ENTRE_UPDATES, MIN_CAMBIO_DISTANCIA_PARA_UPDATES,
+                    (android.location.LocationListener) locListener, Looper.getMainLooper());
+        }
+*/
+/*
+    public LocationListener locListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            System.out.println("---------------------------------------- Lat " +
+                    location.getLatitude() + " Long " + location.getLongitude()+"" +
+                    " ----------------------------------------");
+            latitudYo=location.getLatitude();
+            longitudYo=location.getLongitude();
+        }
+    };
+
+*/

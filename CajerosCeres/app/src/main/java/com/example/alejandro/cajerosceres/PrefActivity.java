@@ -1,14 +1,15 @@
 package com.example.alejandro.cajerosceres;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-public class PrefActivity extends Activity {
+public class PrefActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Mostramos el contenido de la pantalla de preferencias.
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefFragment()).commit();
+        setContentView(R.layout.pref_activity);
+
+        getFragmentManager().beginTransaction().replace(R.id.content_preference, new PrefFragment()).commit();
     }
 }

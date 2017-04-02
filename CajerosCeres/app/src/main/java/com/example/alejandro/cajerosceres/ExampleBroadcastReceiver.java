@@ -1,10 +1,14 @@
 package com.example.alejandro.cajerosceres;
 
-import android.app.Service;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import android.os.IBinder;
 import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
@@ -20,101 +24,60 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
-import java.util.List;
 
-public class ActualizarService extends Service {
+public class ExampleBroadcastReceiver extends BroadcastReceiver {
     MyTask myTask;
     private DataBaseHelperCajeros dbhelper;
-    private List<Cajero> cajerosArray;
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Toast.makeText(this, "Servicio creado!", Toast.LENGTH_SHORT).show();
+    public void onReceive(Context context, Intent intent) {
+        // Aquí lo que se quiera ejecutar
+        System.out.println("*******Temporizador. Actualizar cajeros " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        Toast.makeText(context,"AlamarManager. Actualizar cajeros", Toast.LENGTH_LONG).show();
         myTask = new MyTask();
-    }
+        dbhelper = new DataBaseHelperCajeros(context);
+        myTask.execute();
+        dbhelper.close();
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        //if (myTask==null) {
-            myTask.execute();
-        //}
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, "Servicio destruído!", Toast.LENGTH_SHORT).show();
-        myTask.cancel(true);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Intent intent2 = new Intent(context, MainActivity.class);
+        context.startActivity(intent2);
     }
 
     private class MyTask extends AsyncTask<String, String, String> {
-
-        private boolean cent;
         private static final String URL2 = "http://opendata.caceres.es/GetData/GetData?dataset=om:CajeroAutomatico&format=json";
         AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            cent = true;
         }
-/*
+
         @Override
-        protected String doInBackground(String... params) {
-            while (cent){
-                HttpGet request = new HttpGet(URL2);
-                CajeroListActivity.JSONResponseHandler responseHandler = new CajeroListActivity.JSONResponseHandler();
-                //date = dateFormat.format(new Date());
-                try {
-                    mClient.execute(request, responseHandler);
-                    //publishProgress(date);
-                    // Stop 300000 = 5 minutos
-                    Thread.sleep(300000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
+        protected void onPostExecute(String result){
+            mClient.close();
         }
-*/
+
         @Override
         protected String doInBackground(String... params) {
             HttpGet request = new HttpGet(URL2);
             JSONResponseHandler responseHandler = new JSONResponseHandler();
-            while (cent) {
                 try {
                     mClient.execute(request, responseHandler);
                     publishProgress();
-                    Thread.sleep(10000);
                 } catch (ClientProtocolException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
-            }
             return null;
         }
         @Override
         protected void onProgressUpdate(String... values) {
-            Toast.makeText(getApplicationContext(), "Cajeros Atualizados", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            cent = false;
         }
     }
 
@@ -123,7 +86,6 @@ public class ActualizarService extends Service {
         public Void handleResponse(HttpResponse response) throws IOException {
             Cajero c;
             String JSONResponse = new BasicResponseHandler().handleResponse(response);
-            dbhelper = new DataBaseHelperCajeros(getBaseContext());
 
             try {
                 // Get top-level JSON Object - a Map
@@ -158,7 +120,6 @@ public class ActualizarService extends Service {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            dbhelper.close();
             return null;
         }
     }

@@ -1,9 +1,8 @@
 package com.example.alejandro.cajerosceres;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +27,10 @@ public class CajeroDetailFragment extends Fragment {
     private Cajero cajero;
     private List<Cajero> listaCajeros;
     private DataBaseHelperCajeros dbhelper;
+    private MyTask myTask;
+    private View rootView;
+    private ImageView logo;
+    private ProgressBar progressBar;
 
     public CajeroDetailFragment() { }
 
@@ -60,7 +64,7 @@ public class CajeroDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.cajero_detail, container, false);
+        rootView = inflater.inflate(R.layout.cajero_detail, container, false);
 
         FloatingActionButton favButton = (FloatingActionButton) rootView.findViewById(R.id.favButton);
         favButton.setOnClickListener(new View.OnClickListener() {
@@ -81,10 +85,46 @@ public class CajeroDetailFragment extends Fragment {
 
         if (cajero != null) {
             ((TextView) rootView.findViewById(R.id.entidadBancaria)).setText(cajero.getEntidadBancaria());
-
-            ImageView logo= (ImageView) rootView.findViewById(R.id.imageView2);
+            logo = (ImageView) rootView.findViewById(R.id.imageView2);
+            progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar2);
             Picasso.with(getContext()).load(cajero.getUriFotoCajero()).into(logo);
+
+            myTask = new MyTask();
+            myTask.execute();
         }
         return rootView;
     }
+
+    private class MyTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
+
 }

@@ -27,7 +27,8 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.example.alejandro.cajerosceres.CajeroListActivity"
-        tools:listitem="@layout/cajero_list_content" />
+        tools:listitem="@layout/cajero_list_content"
+        android:layout_weight="0.81" />
 
     <FrameLayout
         android:id="@+id/cajero_detail_container"

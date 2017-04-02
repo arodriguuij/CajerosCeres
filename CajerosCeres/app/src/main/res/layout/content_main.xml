@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
-    tools:context="com.example.alejandro.cajerosceres.MenuLateral"
-    tools:showIn="@layout/app_bar_menu_lateral">
+    tools:context="com.example.alejandro.cajerosceres.MainActivity"
+    tools:showIn="@layout/content">
 
 </RelativeLayout>

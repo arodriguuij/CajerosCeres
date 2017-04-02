@@ -1,13 +1,54 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.alejandro.cajerosceres.AyudaFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <TextView
+        android:text="Ayuda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewAyuda"
+        android:textSize="24sp"
+        android:textStyle="normal|bold"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="104dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:text="Detalles App"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewAyudaDetalles"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:textSize="18sp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAyuda" />
+
+    <TextView
+        android:text="La finalidad de la aplicación es ofrecerle la información necesaria para consultar los cajeros de la cuidad de Cáceres, atendiendo a distintos criterios que faciliten la consulta de de comisión, localización."
+        android:layout_width="wrap_content"
+        android:layout_height="141dp"
+        android:id="@+id/textViewAyudaDetalles2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:padding="15dp"
+        android:textIsSelectable="false"
+        android:textAlignment="gravity"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAyudaDetalles"
+        app:layout_constraintVertical_bias="0.25" />
+
+</android.support.constraint.ConstraintLayout>
