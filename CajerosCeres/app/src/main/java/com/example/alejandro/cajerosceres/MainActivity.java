@@ -1,19 +1,36 @@
 package com.example.alejandro.cajerosceres;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz, LocationListener {
+    private LocationManager handle; //Gestor del servicio de localización
+    private String provider;
+    private LatLng user;
+    private static final String TAG = "LocationActivity";
+    private double longitudUser;
+    private double latitudUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +52,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
+
+        obtenerLocalizacion();
+    }
+
+    public void obtenerLocalizacion(){
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //Requiere permisos para Android 6.0
+            Log.e(TAG, "No se tienen permisos necesarios!, se requieren.");
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
+            return;
+        }
+        Log.i(TAG, "Permisos necesarios OK!.");
+
+        //Crea el objeto que gestiona las localizaciones
+        handle = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        Criteria c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_FINE);
+        // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
+        provider = handle.getBestProvider(c, true);
+        // Se activan las notificaciones de localización con los parámetros:
+        // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
+        handle.requestLocationUpdates(provider, 10000, 1, this);
+        //Obtenemos la última posición conocida dada por el proveedor
+        Location loc = handle.getLastKnownLocation(provider);
+        latitudUser=loc.getLatitude();
+        longitudUser=loc.getLongitude();
+        user = new LatLng(loc.getLatitude(),loc.getLongitude());
+        //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+    }
+
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     @Override
@@ -89,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction().replace(R.id.content_main, new AyudaFragment()).commit();
                 else
                     if (id == R.id.Favoritos) {
-                        responderBusquedaListaCajeros("Todas", "BancoPopular", "favoritos");
+                        responderBusquedaListaCajeros("Todas", "favoritos");
                     }
 
         android.support.v4.widget.DrawerLayout drawer = (android.support.v4.widget.DrawerLayout) findViewById(R.id.drawerLayout);
@@ -98,41 +168,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void responderBusquedaMapaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString) {
+    public void responderBusquedaMapaCajeros(String entidadBancariaString) {
         Intent Intent = new Intent(getApplicationContext(), MapaActivity.class);
-        Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         if(entidadBancariaString.equals("Todas"))
             Intent.putExtra("cuantosCajeros", "todosCajeros");
-        else {
+        else
             Intent.putExtra("cuantosCajeros", entidadBancariaString);
-        }
+        Intent.putExtra("latitudUser", latitudUser);
+        Intent.putExtra("longitudUser", longitudUser);
         startActivity(Intent);
     }
 
     @Override
-    public void responderBusquedaListaCajeros(String entidadBancariaString, String entidadBancariaUsuarioString, String orden) {
+    public void responderBusquedaListaCajeros(String entidadBancariaString, String orden) {
         Intent Intent = new Intent(getApplicationContext(), CajeroListActivity.class);
-        Intent.putExtra("entidadBancariaUsuarioString", entidadBancariaUsuarioString);
         Intent.putExtra("entidadBancariaString", entidadBancariaString);
         Intent.putExtra("orden", orden);
-
-        guardarConfiguracion(entidadBancariaUsuarioString, entidadBancariaString, orden);
+        Intent.putExtra("latitudUser", latitudUser);
+        Intent.putExtra("longitudUser", longitudUser);
+        guardarConfiguracion(entidadBancariaString, orden);
         /*
         PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
         */
-                startActivity(Intent);
+        startActivity(Intent);
     }
 
     //guardar configuración aplicación Android usando SharedPreferences
-    public void guardarConfiguracion(String entidadBancariaUsuarioString, String entidadBancariaString, String orden) {
+    public void guardarConfiguracion(String entidadBancariaString, String orden) {
         SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", this.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("entidadBancariaUsuarioString",entidadBancariaUsuarioString);
         editor.putString("entidadBancariaString", entidadBancariaString);
         editor.putString("orden", orden);
         editor.commit();
     }
+
 
 }

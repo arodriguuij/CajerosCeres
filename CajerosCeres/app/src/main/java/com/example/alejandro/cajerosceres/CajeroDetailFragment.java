@@ -2,6 +2,8 @@ package com.example.alejandro.cajerosceres;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -10,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,6 +34,8 @@ public class CajeroDetailFragment extends Fragment {
     private View rootView;
     private ImageView logo;
     private ProgressBar progressBar;
+    private ImageButton mImageButtonFav;
+
 
     public CajeroDetailFragment() { }
 
@@ -66,26 +71,42 @@ public class CajeroDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.cajero_detail, container, false);
 
-        FloatingActionButton favButton = (FloatingActionButton) rootView.findViewById(R.id.favButton);
-        favButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dbhelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
-                if(cajero.isFav()==0) {
-                    dbhelper.setFavoritoCajero(cajero.getId(), 1);
-                    Toast.makeText(getActivity(),"Añadido a favoritos!",Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    dbhelper.setFavoritoCajero(cajero.getId(), 0);
-                    Toast.makeText(getActivity(),"Eliminado de favoritos!",Toast.LENGTH_SHORT).show();
-                }
-                dbhelper.close();
-            }
-        });
-
         if (cajero != null) {
             ((TextView) rootView.findViewById(R.id.entidadBancaria)).setText(cajero.getEntidadBancaria());
             logo = (ImageView) rootView.findViewById(R.id.imageView2);
+            mImageButtonFav = (ImageButton) rootView.findViewById(R.id.imageButtonFavDetail);
+
+            final Bitmap bmpOn = BitmapFactory.decodeResource(getResources(), R.mipmap.star_on);
+            final Bitmap bmpOff = BitmapFactory.decodeResource(getResources(), R.mipmap.star_off);
+
+            if(cajero.isFav()==1)
+                mImageButtonFav.setImageBitmap(bmpOn);
+            else
+                mImageButtonFav.setImageBitmap(bmpOff);
+
+            mImageButtonFav.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    dbhelper = new DataBaseHelperCajeros(getActivity().getBaseContext());
+
+                    if(cajero.isFav()==0){ //no Fav
+                        cajero.setFav(1);
+                        dbhelper.setFavoritoCajero(cajero.getId(), 1);
+                        mImageButtonFav.setImageBitmap(bmpOn);
+                        Toast.makeText(getContext(),"Cajero "+cajero.getEntidadBancaria()+
+                                " añadido a favoritos", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        cajero.setFav(0);
+                        dbhelper.setFavoritoCajero(cajero.getId(), 0);
+                        mImageButtonFav.setImageBitmap(bmpOff);
+                        Toast.makeText(getContext(),"Cajero "+cajero.getEntidadBancaria()+
+                                " eliminado de favoritos", Toast.LENGTH_SHORT).show();
+                    }
+                    dbhelper.close();
+                }
+            });
+
+
             progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar2);
             Picasso.with(getContext()).load(cajero.getUriFotoCajero()).into(logo);
 

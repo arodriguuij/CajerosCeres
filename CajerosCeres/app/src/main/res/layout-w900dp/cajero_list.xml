@@ -19,7 +19,7 @@
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/cajero_list"
+        android:id="@+id/cajero_listHorizontal"
         android:name="com.example.alejandro.cajerosceres.CajeroListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"

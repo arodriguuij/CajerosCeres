@@ -2,10 +2,22 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <PreferenceCategory android:title="Moneda - Por defecto: €">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:title="Libras"
-            android:key="check_box_ajustes_libras"/>
+    <PreferenceCategory android:title="@string/Moneda">
+        <ListPreference
+            android:entries="@array/listentriesMoneda"
+            android:entryValues="@array/listvaluesMoneda"
+            android:defaultValue="Euros"
+            android:key="PREF_LIST_MONEDAS"
+            android:title="@string/monedas" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/Entidad_bancaria_usuario">
+        <ListPreference
+            android:entries="@array/listentries"
+            android:entryValues="@array/listvalues"
+            android:defaultValue="BBVA"
+            android:key="PREF_LIST_ENTIDAD"
+            android:title="@string/entidad_bancaria_usuario" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

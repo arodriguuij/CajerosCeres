@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -13,7 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
@@ -25,16 +30,25 @@ import java.util.List;
 
 public class CajeroListActivity extends AppCompatActivity {
     private boolean mTwoPane;
-    private DataBaseHelperCajeros dbhelper;
     private DataBaseHelperEntidadesBancarias dbhelperEB;
     private List<Cajero> cajerosArray;
-    private Boolean libras=false;
+    private String moneda;
     private String entidadBancariaUsuario;
     private String entidadBancariaSeleccion;
     private String orden;
     private EntidadBancaria e;
     private Double comision;
     private Toolbar toolbar;
+    private double longitudUser;
+    private double latitudUser;
+    private DataBaseHelperCajeros dbhelper;
+    private Location locationA;
+    private Location locationB;
+    private Location locationAaux;
+    private Location locationBaux;
+    private float distanceAaux;
+    private float distanceBaux;
+    private float distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,43 +62,32 @@ public class CajeroListActivity extends AppCompatActivity {
         /*if (findViewById(R.id.cajero_detail_container) != null) {
             mTwoPane = true;
         }*/
+        cargarConfiguracion();
+
         View recyclerView = findViewById(R.id.cajero_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
-        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
-
-        cargarConfiguracion();
     }
-
 
     //cargar configuración aplicación Android usando SharedPreferences
     public void cargarConfiguracion(){
-        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
-        entidadBancariaSeleccion = prefs.getString("entidadBancariaUsuarioString", "");
-        entidadBancariaUsuario = prefs.getString("entidadBancariaString", "");
-        orden = prefs.getString("orden", "");
-/*
-        imageButtonFav.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            }
-        });*/
-    }
+        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        moneda = sharedPref.getString(PrefFragment.KEY_PREF_MONEDAS, "Euros");
+        entidadBancariaUsuario = sharedPref.getString(PrefFragment.KEY_PREF_ENTIDAD_BANCARIA_USUARIO, "BBVA");
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         //Obtenemos el nombre de origen que el usuario indicó
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         // Entindad bancaría de los cajeros a mostrar
         entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
-        // Entindad bancaría del usuario para constrastar las comisiones
-        entidadBancariaUsuario = (String) extras.get("entidadBancariaUsuarioString");
+        getEntidadBancariaUsuario();
+
+        latitudUser = (Double) extras.get("latitudUser");
+        longitudUser = (Double) extras.get("longitudUser");
+
         // Tipo de orden de la lista
         orden = (String) extras.getString("orden");
-
-        getEntidadBancariaUsuario();
 
         switch (entidadBancariaSeleccion){
             case "Todas":
@@ -94,12 +97,24 @@ public class CajeroListActivity extends AppCompatActivity {
                 recuperarCajerosEntidadBancaria();
                 break;
         }
-        if(orden.equals("ranking")) {
-            burbuja();
+        if(orden.equals("distancia")) {
+            burbujaDistancia();
+        }
+        if(orden.equals("comision")) {
+            burbujaComision();
         }
         if(orden.equals("favoritos")) {
             favoritos();
         }
+
+        /*
+        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
+        entidadBancariaSeleccion = prefs.getString("entidadBancariaUsuarioString", "");
+        orden = prefs.getString("orden", "");
+        */
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(cajerosArray));
     }
 
@@ -121,34 +136,54 @@ public class CajeroListActivity extends AppCompatActivity {
             // Entidad bancaria lista
             holder.mEntidadBancariaView.setText("Cajero "+mValues.get(position).getEntidadBancaria());
 
-            getEntidadBancariaUsuario();
+            locationA = new Location("point A");
+            locationA.setLatitude(holder.mItem.getLatitud());
+            locationA.setLongitude(holder.mItem.getLongitud());
+
+            locationB = new Location("point B");
+            locationB.setLatitude(latitudUser);
+            locationB.setLongitude(longitudUser);
+
+            distance = locationA.distanceTo(locationB);
+            holder.mDistancia.setText(Float.toString(distance)+" m");
+
             getComisionEntidadBancaria(mValues.get(position).getEntidadBancaria());
 
-            if(libras)
+            final Bitmap bmpOn = BitmapFactory.decodeResource(getResources(), R.mipmap.star_on);
+            final Bitmap bmpOff = BitmapFactory.decodeResource(getResources(), R.mipmap.star_off);
+
+            if(moneda.equals("Libras"))
                 holder.mcomisionView.setText(comision+"£");
             else
-                holder.mcomisionView.setText(comision+"€");
-/*
-            if(holder.mItem.isFav()==1)
-                holder.mBtnBotonMasImagen.setImageAlpha(R.mipmap.star_on);
-            else
-                holder.mBtnBotonMasImagen.setImageAlpha(R.mipmap.star_off);
+                if(moneda.equals("Euros"))
+                    holder.mcomisionView.setText(comision+"€");
 
-            holder.mBtnToggle.setOnClickListener(new View.OnClickListener() {
+            if(holder.mItem.isFav()==1)
+                holder.mImageButtonFav.setImageBitmap(bmpOn);
+            else
+                holder.mImageButtonFav.setImageBitmap(bmpOff);
+
+            holder.mImageButtonFav.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    dbhelper = new DataBaseHelperCajeros(getBaseContext());
                     if(holder.mItem.isFav()==0){ //no Fav
                         holder.mItem.setFav(1);
-                        holder.mBtnToggle.setChecked(true);
-                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+" añadido a favoritos", Toast.LENGTH_LONG).show();
+                        dbhelper.setFavoritoCajero( holder.mItem.getId(), 1);
+                        holder.mImageButtonFav.setImageBitmap(bmpOn);
+                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+
+                        " añadido a favoritos", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         holder.mItem.setFav(0);
-                        holder.mBtnToggle.setChecked(false);
-                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+" eliminado de favoritos", Toast.LENGTH_LONG).show();
+                        dbhelper.setFavoritoCajero( holder.mItem.getId(), 0);
+                        holder.mImageButtonFav.setImageBitmap(bmpOff);
+                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+
+                        " eliminado de favoritos", Toast.LENGTH_SHORT).show();
                     }
+                    dbhelper.close();
+
                 }
             });
-*/
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,7 +222,8 @@ public class CajeroListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mEntidadBancariaView;
             public final TextView mcomisionView;
-            //public final ImageButton mImageButtonFav;
+            public final TextView mDistancia;
+            public final ImageButton mImageButtonFav;
             public Cajero mItem;
 
             public ViewHolder(View view) {
@@ -195,7 +231,8 @@ public class CajeroListActivity extends AppCompatActivity {
                 mView = view;
                 mEntidadBancariaView = (TextView) view.findViewById(R.id.nombreEntidad);
                 mcomisionView = (TextView) view.findViewById(R.id.comision);
-                //mImageButtonFav = (ImageButton) findViewById(R.id.imageButtonFav);
+                mDistancia = (TextView) view.findViewById(R.id.textViewDistancia);
+                mImageButtonFav = (ImageButton) view.findViewById(R.id.imageButtonFav);
             }
 
             @Override
@@ -205,16 +242,43 @@ public class CajeroListActivity extends AppCompatActivity {
         }
     }
 
-    public  void burbuja(){
+    public  void burbujaComision(){
         int i, j;
         Cajero aux = new Cajero();
         for(i=0;i<cajerosArray.size()-1;i++)
             for(j=0;j<cajerosArray.size()-1;j++)
-                if(getComisionEntidadBancaria(cajerosArray.get(j+1).getEntidadBancaria())<=getComisionEntidadBancaria(cajerosArray.get(j).getEntidadBancaria())){
+                if(getComisionEntidadBancaria(cajerosArray.get(j+1).getEntidadBancaria())<=
+                        getComisionEntidadBancaria(cajerosArray.get(j).getEntidadBancaria())){
                     asignarCajero(aux,cajerosArray.get(j+1));
                     asignarCajero(cajerosArray.get(j+1),cajerosArray.get(j));
                     asignarCajero(cajerosArray.get(j),aux);
                 }
+    }
+
+    public  void burbujaDistancia(){
+        locationB = new Location("point B");
+        locationB.setLatitude(latitudUser);
+        locationB.setLongitude(longitudUser);
+        int i, j;
+        Cajero aux = new Cajero();
+        for(i=0;i<cajerosArray.size()-1;i++)
+            for(j=0;j<cajerosArray.size()-1;j++) {
+                locationAaux = new Location("cajero j + 1");
+                locationAaux.setLatitude(cajerosArray.get(j + 1).getLatitud());
+                locationAaux.setLongitude(cajerosArray.get(j + 1).getLongitud());
+                distanceAaux = locationAaux.distanceTo(locationB);
+
+                locationBaux = new Location("cajero j");
+                locationBaux.setLatitude(cajerosArray.get(j).getLatitud());
+                locationBaux.setLongitude(cajerosArray.get(j).getLongitud());
+                distanceBaux = locationBaux.distanceTo(locationB);
+
+                if (distanceAaux <= distanceBaux) {
+                    asignarCajero(aux, cajerosArray.get(j + 1));
+                    asignarCajero(cajerosArray.get(j + 1), cajerosArray.get(j));
+                    asignarCajero(cajerosArray.get(j), aux);
+                }
+            }
     }
 
     public void favoritos(){

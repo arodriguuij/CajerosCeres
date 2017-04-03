@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 public class PrefFragment extends PreferenceFragment {
-    public static final String KEY_PREF_MONEDA_LIBRAS = "check_box_ajustes_libras";
+    public static final String KEY_PREF_MONEDAS = "PREF_LIST_MONEDAS";
+    public static final String KEY_PREF_ENTIDAD_BANCARIA_USUARIO = "PREF_LIST_ENTIDAD";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

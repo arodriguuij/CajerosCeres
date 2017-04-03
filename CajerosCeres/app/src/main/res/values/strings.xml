@@ -15,7 +15,11 @@
     <string name="title_activity_main_activity">MainActivity</string>
 
     <!-- Strings related to Settings -->
-
+    <string name="tocar_pantalla_para_acceder">Tocar pantalla para acceder</string>
+    <string name="entidad_bancaria_usuario">Entidad bancaria usuario: </string>
+    <string name="monedas">Monedas: </string>
+    <string name="Moneda">Moneda (€ - £)</string>
+    <string name="Entidad_bancaria_usuario">Entidad bancaria usuario </string>
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 

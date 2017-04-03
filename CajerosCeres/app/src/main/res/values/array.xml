@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="listentries">
+        <item>BancoPopular</item>
+        <item>BancaPueyo</item>
+        <item>Bankinter</item>
+        <item>BBVA</item>
+        <item>Caixa</item>
+        <item>CaixaGeral</item>
+        <item>CajaAlmendralejo</item>
+        <item>CajaBadajoz</item>
+        <item>CajaDuero</item>
+        <item>CajaExtremadura</item>
+        <item>CajaRural</item>
+        <item>DeutscheBank</item>
+        <item>Liberban</item>
+        <item>Popular</item>
+        <item>Sabadell</item>
+        <item>Santander</item>
+    </string-array>
+    <string-array name="listvalues">
+        <item>BancoPopular</item>
+        <item>BancaPueyo</item>
+        <item>Bankinter</item>
+        <item>BBVA</item>
+        <item>Caixa</item>
+        <item>CaixaGeral</item>
+        <item>CajaAlmendralejo</item>
+        <item>CajaBadajoz</item>
+        <item>CajaDuero</item>
+        <item>CajaExtremadura</item>
+        <item>CajaRural</item>
+        <item>DeutscheBank</item>
+        <item>Liberban</item>
+        <item>Popular</item>
+        <item>Sabadell</item>
+        <item>Santander</item>
+    </string-array>
+
+    <string-array name="listentriesMoneda">
+        <item>Euros</item>
+        <item>Libras</item>
+    </string-array>
+    <string-array name="listvaluesMoneda">
+        <item>Euros</item>
+        <item>Libras</item>
+    </string-array>
+</resources>
