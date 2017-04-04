@@ -20,6 +20,8 @@
     <string name="monedas">Monedas: </string>
     <string name="Moneda">Moneda (€ - £)</string>
     <string name="Entidad_bancaria_usuario">Entidad bancaria usuario </string>
+    <string name="distancia_maxima">distancia maxima: </string>
+    <string name="Distancia_maxima">Distancia maxima</string>
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 

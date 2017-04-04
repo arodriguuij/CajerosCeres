@@ -85,27 +85,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
     }
 
-
+    @Override
+    public void onLocationChanged(Location location) {  }
 
     @Override
-    public void onLocationChanged(Location location) {
-
-    }
+    public void onStatusChanged(String provider, int status, Bundle extras) {  }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
+    public void onProviderEnabled(String provider) {  }
 
     @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
+    public void onProviderDisabled(String provider) {  }
 
     @Override
     public void onBackPressed() {
