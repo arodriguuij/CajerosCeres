@@ -79,8 +79,23 @@ public class CajeroListActivity extends AppCompatActivity {
         //Obtenemos el nombre de origen que el usuario indicó
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        // Entindad bancaría de los cajeros a mostrar
-        entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
+
+        try {
+            entidadBancariaSeleccion = (String) extras.get("entidadBancariaString");
+        }catch (Exception e){ };
+
+        // Boton back desde detellaes de un cajero. Necesita obtener la entidad bancaria seleccionada y el orden
+        // con el que se buscó la lista de cajeros
+        /****************************************************************************************************/
+        if(entidadBancariaSeleccion == null){
+            SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
+            entidadBancariaSeleccion = prefs.getString("entidadBancariaSeleccion", "");
+            orden = prefs.getString("orden", "");
+            latitudUser = Double.parseDouble(prefs.getString("latitudUser", ""));
+            longitudUser = Double.parseDouble(prefs.getString("longitudUser", ""));
+        }
+        /****************************************************************************************************/
+
         getEntidadBancariaUsuario();
 
         latitudUser = (Double) extras.get("latitudUser");
@@ -107,11 +122,18 @@ public class CajeroListActivity extends AppCompatActivity {
             favoritos();
         }
 
-        /*
+        // Obtener entidad bancaria seleccionada y el orden para obtenerlo en caso
+        // de hacer back en los detalles de un cajero al necesitar estos datos para filtrar el listado
+        /****************************************************************************************************/
         SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
-        entidadBancariaSeleccion = prefs.getString("entidadBancariaUsuarioString", "");
-        orden = prefs.getString("orden", "");
-        */
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("entidadBancariaSeleccion", entidadBancariaSeleccion);
+        editor.putString("orden", orden);
+        extras.putDouble("latitudUser",latitudUser);
+        extras.putDouble("longitudUser",longitudUser);
+        editor.commit();
+        /****************************************************************************************************/
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
