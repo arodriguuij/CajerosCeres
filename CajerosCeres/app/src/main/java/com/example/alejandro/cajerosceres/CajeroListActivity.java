@@ -45,8 +45,6 @@ public class CajeroListActivity extends AppCompatActivity {
     private double longitudUser;
     private double latitudUser;
     private DataBaseHelperCajeros dbhelper;
-    private Location locationA;
-    private Location locationB;
     private float distancia;
     private float distanciaAux;
 
@@ -70,7 +68,7 @@ public class CajeroListActivity extends AppCompatActivity {
     }
 
     //cargar configuración aplicación Android usando SharedPreferences
-    public void cargarConfiguracion(){
+    public void cargarConfiguracion() {
         PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         distanciaMaxima = sharedPref.getString(PrefFragment.KEY_PREF_DISTANCIA, "Infinito");
@@ -91,7 +89,7 @@ public class CajeroListActivity extends AppCompatActivity {
         // Tipo de orden de la lista
         orden = (String) extras.getString("orden");
 
-        switch (entidadBancariaSeleccion){
+        switch (entidadBancariaSeleccion) {
             case "Todas":
                 recuperarTodosCajeros();
                 break;
@@ -99,13 +97,13 @@ public class CajeroListActivity extends AppCompatActivity {
                 recuperarCajerosEntidadBancaria();
                 break;
         }
-        if(orden.equals("distancia")) {
+        if (orden.equals("distancia")) {
             burbujaDistancia();
         }
-        if(orden.equals("comision")) {
+        if (orden.equals("comision")) {
             burbujaComision();
         }
-        if(orden.equals("favoritos")) {
+        if (orden.equals("favoritos")) {
             favoritos();
         }
 
@@ -122,6 +120,7 @@ public class CajeroListActivity extends AppCompatActivity {
 
     public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
         private final List<Cajero> mValues;
+
         public SimpleItemRecyclerViewAdapter(List<Cajero> items) {
             mValues = items;
         }
@@ -136,34 +135,32 @@ public class CajeroListActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
             // Entidad bancaria lista
-            holder.mEntidadBancariaView.setText("Cajero "+mValues.get(position).getEntidadBancaria());
+            holder.mEntidadBancariaView.setText("Cajero " + mValues.get(position).getEntidadBancaria());
             holder.mEntidadBancariaView.setTextColor(Color.parseColor("#49678D"));
 
-            distancia = calcularDistancia(holder.mItem.getLatitud(),holder.mItem.getLongitud(),latitudUser,longitudUser);
-            holder.mDistancia.setText(Float.toString(distancia)+" m");
-            if(distancia>1000)
+            distancia = calcularDistancia(holder.mItem.getLatitud(), holder.mItem.getLongitud(), latitudUser, longitudUser);
+            holder.mDistancia.setText(Float.toString(distancia) + " m");
+            if (distancia > 1000)
                 holder.mDistancia.setTextColor(Color.parseColor("#FE0000"));
+            else if (distancia > 500)
+                holder.mDistancia.setTextColor(Color.parseColor("#E5BE01"));
             else
-                if(distancia>500)
-                    holder.mDistancia.setTextColor(Color.parseColor("#E5BE01"));
-                else
-                    holder.mDistancia.setTextColor(Color.parseColor("#57A639"));
+                holder.mDistancia.setTextColor(Color.parseColor("#57A639"));
 
             getComisionEntidadBancaria(mValues.get(position).getEntidadBancaria());
 
             final Bitmap bmpOn = BitmapFactory.decodeResource(getResources(), R.mipmap.star_on);
             final Bitmap bmpOff = BitmapFactory.decodeResource(getResources(), R.mipmap.star_off);
 
-            if(moneda.equals("Libras"))
-                holder.mcomisionView.setText(comision+"£");
-            else
-                if(moneda.equals("Euros"))
-                    holder.mcomisionView.setText(comision+"€");
-            if(comision.equals(0.0))
+            if (moneda.equals("Libras"))
+                holder.mcomisionView.setText(comision + "£");
+            else if (moneda.equals("Euros"))
+                holder.mcomisionView.setText(comision + "€");
+            if (comision.equals(0.0))
                 holder.mcomisionView.setTextColor(Color.parseColor("#57A639"));
 
 
-            if(holder.mItem.isFav()==1)
+            if (holder.mItem.isFav() == 1)
                 holder.mImageButtonFav.setImageBitmap(bmpOn);
             else
                 holder.mImageButtonFav.setImageBitmap(bmpOff);
@@ -171,18 +168,17 @@ public class CajeroListActivity extends AppCompatActivity {
             holder.mImageButtonFav.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     dbhelper = new DataBaseHelperCajeros(getBaseContext());
-                    if(holder.mItem.isFav()==0){ //no Fav
+                    if (holder.mItem.isFav() == 0) { //no Fav
                         holder.mItem.setFav(1);
-                        dbhelper.setFavoritoCajero( holder.mItem.getId(), 1);
+                        dbhelper.setFavoritoCajero(holder.mItem.getId(), 1);
                         holder.mImageButtonFav.setImageBitmap(bmpOn);
-                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+
+                        Toast.makeText(getBaseContext(), "Cajero " + holder.mItem.getEntidadBancaria() +
                                 " añadido a favoritos", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
+                    } else {
                         holder.mItem.setFav(0);
-                        dbhelper.setFavoritoCajero( holder.mItem.getId(), 0);
+                        dbhelper.setFavoritoCajero(holder.mItem.getId(), 0);
                         holder.mImageButtonFav.setImageBitmap(bmpOff);
-                        Toast.makeText(getBaseContext(),"Cajero "+holder.mItem.getEntidadBancaria()+
+                        Toast.makeText(getBaseContext(), "Cajero " + holder.mItem.getEntidadBancaria() +
                                 " eliminado de favoritos", Toast.LENGTH_SHORT).show();
                     }
                     dbhelper.close();
@@ -202,16 +198,17 @@ public class CajeroListActivity extends AppCompatActivity {
                     } else {*/
                     Context context = v.getContext();
                     Intent intent = new Intent(context, CajeroDetailActivity.class);
-                    intent.putExtra(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId()+1));
-                    intent.putExtra("id",holder.mItem.getId());
-                    intent.putExtra("entidadBancaria",holder.mItem.getEntidadBancaria());
-                    intent.putExtra("uriFotoCajero",holder.mItem.getUriFotoCajero());
-                    intent.putExtra("longitud",holder.mItem.getLongitud());
-                    intent.putExtra("latitud",holder.mItem.getLatitud());
-                    intent.putExtra("fav",holder.mItem.isFav());
-                    intent.putExtra("entidadBancariaSeleccion",entidadBancariaSeleccion);
-                    intent.putExtra("entidadBancariaUsuario",entidadBancariaUsuario);
-                    intent.putExtra("orden",orden);
+                    intent.putExtra(CajeroDetailFragment.ARG_ITEM_ID, String.valueOf(holder.mItem.getId() + 1));
+                    intent.putExtra("id", holder.mItem.getId());
+                    intent.putExtra("entidadBancaria", holder.mItem.getEntidadBancaria());
+                    intent.putExtra("uriFotoCajero", holder.mItem.getUriFotoCajero());
+                    intent.putExtra("longitud", holder.mItem.getLongitud());
+                    intent.putExtra("latitud", holder.mItem.getLatitud());
+                    intent.putExtra("fav", holder.mItem.isFav());
+                    intent.putExtra("entidadBancariaSeleccion", entidadBancariaSeleccion);
+                    intent.putExtra("entidadBancariaUsuario", entidadBancariaUsuario);
+                    intent.putExtra("orden", orden);
+
                     context.startActivity(intent);
                     //}
                 }
@@ -247,31 +244,28 @@ public class CajeroListActivity extends AppCompatActivity {
         }
     }
 
-    public  void burbujaComision(){
+    public void burbujaComision() {
         int i, j;
         Cajero aux = new Cajero();
-        for(i=0;i<cajerosArray.size()-1;i++)
-            for(j=0;j<cajerosArray.size()-1;j++)
-                if(getComisionEntidadBancaria(cajerosArray.get(j+1).getEntidadBancaria())<=
-                        getComisionEntidadBancaria(cajerosArray.get(j).getEntidadBancaria())){
-                    asignarCajero(aux,cajerosArray.get(j+1));
-                    asignarCajero(cajerosArray.get(j+1),cajerosArray.get(j));
-                    asignarCajero(cajerosArray.get(j),aux);
+        for (i = 0; i < cajerosArray.size() - 1; i++)
+            for (j = 0; j < cajerosArray.size() - 1; j++)
+                if (getComisionEntidadBancaria(cajerosArray.get(j + 1).getEntidadBancaria()) <=
+                        getComisionEntidadBancaria(cajerosArray.get(j).getEntidadBancaria())) {
+                    asignarCajero(aux, cajerosArray.get(j + 1));
+                    asignarCajero(cajerosArray.get(j + 1), cajerosArray.get(j));
+                    asignarCajero(cajerosArray.get(j), aux);
                 }
     }
 
-    public  void burbujaDistancia(){
-        locationB = new Location("point B");
-        locationB.setLatitude(latitudUser);
-        locationB.setLongitude(longitudUser);
+    public void burbujaDistancia() {
         int i, j;
         Cajero aux = new Cajero();
-        for(i=0;i<cajerosArray.size()-1;i++)
-            for(j=0;j<cajerosArray.size()-1;j++) {
-                distancia=calcularDistancia(cajerosArray.get(j + 1).getLatitud(),cajerosArray.get(j + 1).getLongitud(),
+        for (i = 0; i < cajerosArray.size() - 1; i++)
+            for (j = 0; j < cajerosArray.size() - 1; j++) {
+                distancia = calcularDistancia(cajerosArray.get(j + 1).getLatitud(), cajerosArray.get(j + 1).getLongitud(),
                         latitudUser, longitudUser);
 
-                distanciaAux=calcularDistancia(cajerosArray.get(j).getLatitud(),cajerosArray.get(j).getLongitud(),
+                distanciaAux = calcularDistancia(cajerosArray.get(j).getLatitud(), cajerosArray.get(j).getLongitud(),
                         latitudUser, longitudUser);
 
                 if (distancia > distanciaAux) {
@@ -282,16 +276,16 @@ public class CajeroListActivity extends AppCompatActivity {
             }
     }
 
-    public void favoritos(){
+    public void favoritos() {
         cajerosArray = new ArrayList<Cajero>();
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
-        try (Cursor cur = dbhelper.getCursorCajero()){
-            while(cur.moveToNext()){
-                Cajero c = new Cajero(cur.getInt(0),cur.getString(1),cur.getString(2)
-                        ,cur.getDouble(3),cur.getDouble(4),cur.getString(5),cur.getInt(6));
-                distancia=calcularDistancia(c.getLatitud(),c.getLongitud(),latitudUser,longitudUser);
+        try (Cursor cur = dbhelper.getCursorCajero()) {
+            while (cur.moveToNext()) {
+                Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
+                        , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
+                distancia = calcularDistancia(c.getLatitud(), c.getLongitud(), latitudUser, longitudUser);
 
-                if((distanciaMaximaInt>distancia) && (c.isFav()==1))
+                if ((distanciaMaximaInt > distancia) && (c.isFav() == 1))
                     cajerosArray.add(c);
             }
             cur.close();
@@ -299,7 +293,7 @@ public class CajeroListActivity extends AppCompatActivity {
         dbhelper.close();
     }
 
-    public void asignarCajero(Cajero aux,Cajero aux2){
+    public void asignarCajero(Cajero aux, Cajero aux2) {
         aux.setId(aux2.getId());
         aux.setEntidadBancaria(aux2.getEntidadBancaria());
         aux.setUriFotoCajero(aux2.getUriFotoCajero());
@@ -309,17 +303,17 @@ public class CajeroListActivity extends AppCompatActivity {
         aux.setFav(aux2.isFav());
     }
 
-    private void recuperarTodosCajeros(){
+    private void recuperarTodosCajeros() {
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
         cajerosArray = new ArrayList<Cajero>();
-        try (Cursor cur = dbhelper.getCursorCajero()){
-            while(cur.moveToNext()){
-                Cajero c = new Cajero(cur.getInt(0),cur.getString(1),cur.getString(2)
-                        ,cur.getDouble(3),cur.getDouble(4),cur.getString(5),cur.getInt(6));
+        try (Cursor cur = dbhelper.getCursorCajero()) {
+            while (cur.moveToNext()) {
+                Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
+                        , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
 
-                distancia=calcularDistancia(c.getLatitud(),c.getLongitud(),latitudUser,longitudUser);
+                distancia = calcularDistancia(c.getLatitud(), c.getLongitud(), latitudUser, longitudUser);
 
-                if(distanciaMaximaInt>distancia)
+                if (distanciaMaximaInt > distancia)
                     cajerosArray.add(c);
             }
             cur.close();
@@ -327,18 +321,18 @@ public class CajeroListActivity extends AppCompatActivity {
         dbhelper.close();
     }
 
-    private void recuperarCajerosEntidadBancaria(){
+    private void recuperarCajerosEntidadBancaria() {
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
         cajerosArray = new ArrayList<Cajero>();
-        try (Cursor cur = dbhelper.getCursorCajero()){
-            while(cur.moveToNext()){
-                if(cur.getString(1).equals(entidadBancariaSeleccion)){
-                    Cajero c = new Cajero(cur.getInt(0),cur.getString(1),cur.getString(2)
-                            ,cur.getDouble(3),cur.getDouble(4),cur.getString(5),cur.getInt(6));
+        try (Cursor cur = dbhelper.getCursorCajero()) {
+            while (cur.moveToNext()) {
+                if (cur.getString(1).equals(entidadBancariaSeleccion)) {
+                    Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
+                            , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
 
-                    distancia=calcularDistancia(c.getLatitud(),c.getLongitud(),latitudUser,longitudUser);
+                    distancia = calcularDistancia(c.getLatitud(), c.getLongitud(), latitudUser, longitudUser);
 
-                    if(distanciaMaximaInt>distancia)
+                    if (distanciaMaximaInt > distancia)
                         cajerosArray.add(c);
                 }
             }
@@ -347,37 +341,69 @@ public class CajeroListActivity extends AppCompatActivity {
         dbhelper.close();
     }
 
-    private double getComisionEntidadBancaria(String entidadBancariaLista){
-        switch(entidadBancariaLista){
-            case "BancoPopular":        comision=e.getComisionBancaPueyo();         break;
-            case "BancaPueyo":          comision=e.getComisionBancoPopular();       break;
-            case "Bankinter":           comision=e.getComisionBankinter();          break;
-            case "BBVA":                comision=e.getComisionBBVA();               break;
-            case "Caixa":               comision=e.getComisionCaixa();              break;
-            case "CaixaGeral":          comision=e.getComisionCaixaGeral();         break;
-            case "CajaAlmendralejo":    comision=e.getComisionCajaAlmendralejo();   break;
-            case "CajaBadajoz":         comision=e.getComisionCajaBadajoz();        break;
-            case "CajaDuero":           comision=e.getComisionCajaDuero();          break;
-            case "CajaExtremadura":     comision=e.getComisionCajaExtremadura();    break;
-            case "CajaRural":           comision=e.getComisionCajaRural();          break;
-            case "DeutscheBank":        comision=e.getComisionDeutscheBank();       break;
-            case "Liberban":            comision=e.getComisionLiberbank();          break;
-            case "Popular":             comision=e.getComisionPopular();            break;
-            case "Sabadell":            comision=e.getComisionSabadell();           break;
-            case "Santander":           comision=e.getComisionSantander();          break;
+    private double getComisionEntidadBancaria(String entidadBancariaLista) {
+        switch (entidadBancariaLista) {
+            case "BancoPopular":
+                comision = e.getComisionBancaPueyo();
+                break;
+            case "BancaPueyo":
+                comision = e.getComisionBancoPopular();
+                break;
+            case "Bankinter":
+                comision = e.getComisionBankinter();
+                break;
+            case "BBVA":
+                comision = e.getComisionBBVA();
+                break;
+            case "Caixa":
+                comision = e.getComisionCaixa();
+                break;
+            case "CaixaGeral":
+                comision = e.getComisionCaixaGeral();
+                break;
+            case "CajaAlmendralejo":
+                comision = e.getComisionCajaAlmendralejo();
+                break;
+            case "CajaBadajoz":
+                comision = e.getComisionCajaBadajoz();
+                break;
+            case "CajaDuero":
+                comision = e.getComisionCajaDuero();
+                break;
+            case "CajaExtremadura":
+                comision = e.getComisionCajaExtremadura();
+                break;
+            case "CajaRural":
+                comision = e.getComisionCajaRural();
+                break;
+            case "DeutscheBank":
+                comision = e.getComisionDeutscheBank();
+                break;
+            case "Liberban":
+                comision = e.getComisionLiberbank();
+                break;
+            case "Popular":
+                comision = e.getComisionPopular();
+                break;
+            case "Sabadell":
+                comision = e.getComisionSabadell();
+                break;
+            case "Santander":
+                comision = e.getComisionSantander();
+                break;
         }
         return comision;
     }
 
-    private EntidadBancaria getEntidadBancariaUsuario(){
+    private EntidadBancaria getEntidadBancariaUsuario() {
         dbhelperEB = new DataBaseHelperEntidadesBancarias(getBaseContext());
-        try (Cursor cur = dbhelperEB.getCursorEntidadBancaria()){
-            while(cur.moveToNext()){
-                if(cur.getString(1).equals(entidadBancariaUsuario))
-                    e = new EntidadBancaria(cur.getInt(0),cur.getString(1),cur.getDouble(2)
-                            ,cur.getDouble(3),cur.getDouble(4),cur.getDouble(5),cur.getDouble(6),cur.getDouble(7)
-                            ,cur.getDouble(8),cur.getDouble(9),cur.getDouble(10),cur.getDouble(11),cur.getDouble(12),cur.getDouble(13)
-                            ,cur.getDouble(14),cur.getDouble(15),cur.getDouble(16),cur.getDouble(17));
+        try (Cursor cur = dbhelperEB.getCursorEntidadBancaria()) {
+            while (cur.moveToNext()) {
+                if (cur.getString(1).equals(entidadBancariaUsuario))
+                    e = new EntidadBancaria(cur.getInt(0), cur.getString(1), cur.getDouble(2)
+                            , cur.getDouble(3), cur.getDouble(4), cur.getDouble(5), cur.getDouble(6), cur.getDouble(7)
+                            , cur.getDouble(8), cur.getDouble(9), cur.getDouble(10), cur.getDouble(11), cur.getDouble(12), cur.getDouble(13)
+                            , cur.getDouble(14), cur.getDouble(15), cur.getDouble(16), cur.getDouble(17));
             }
             cur.close();
         }
@@ -385,8 +411,8 @@ public class CajeroListActivity extends AppCompatActivity {
         return e;
     }
 
-    private void setDistanciaMaxima(String distanciaMaxima){
-        switch (distanciaMaxima){
+    private void setDistanciaMaxima(String distanciaMaxima) {
+        switch (distanciaMaxima) {
             case "100":
                 distanciaMaximaInt = 100;
                 break;
@@ -402,19 +428,14 @@ public class CajeroListActivity extends AppCompatActivity {
         }
     }
 
-    private float calcularDistancia(double latitudA, double longitudA, double latitudB, double longitudB){
-        locationA = new Location("A");
+    public static float calcularDistancia(double latitudA, double longitudA, double latitudB, double longitudB) {
+        Location locationA = new Location("A");
         locationA.setLatitude(latitudA);
         locationA.setLongitude(longitudA);
-        locationB = new Location("B");
+        Location locationB = new Location("B");
         locationB.setLatitude(latitudB);
         locationB.setLongitude(longitudB);
 
         return locationA.distanceTo(locationB);
-    }
-
-    private void colorDistancia(float distancia){
-
-
     }
 }

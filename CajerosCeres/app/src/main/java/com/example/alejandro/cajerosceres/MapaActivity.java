@@ -52,6 +52,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String provider;
     private LatLng user;
     private Boolean permisos=false;
+    private float distancia;
 
     //Minimo tiempo para updates en Milisegundos
     private static final long MIN_CAMBIO_DISTANCIA_PARA_UPDATES = 10; // 10 metros
@@ -82,6 +83,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng ciudadCaceres = new LatLng(39.4752169, -6.372337600000037);
         cuantosCajeros = (String) extras.get("cuantosCajeros");
 
+
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
         switch (cuantosCajeros) {
             case "todosCajeros":
@@ -89,8 +91,10 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 while (i < listaCajeros.size()) {
                     getComisionEntidadBancaria(listaCajeros.get(i).getEntidadBancaria());
                     LatLng cajero = new LatLng(listaCajeros.get(i).getLatitud(), listaCajeros.get(i).getLongitud());
+                    distancia=CajeroListActivity.calcularDistancia(listaCajeros.get(i).getLatitud(),listaCajeros.get(i).getLongitud(),
+                            latitudUser,longitudUser);
                     mapa.addMarker(markerOptions.position(cajero).title(listaCajeros.get(i).getEntidadBancaria())
-                            .snippet(listaCajeros.get(i).getUriFotoCajero()).icon(icon));
+                            .snippet("Distancia: "+distancia+" m").icon(icon));
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ciudadCaceres, 13));
                     i++;
                 }
@@ -98,7 +102,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             case "unCajero":
                 getComisionEntidadBancaria(entidadBancaria);
                 LatLng cajero = new LatLng(latitud, longitud);
-                mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria).snippet(uriFotoCajero).icon(icon));
+                distancia=CajeroListActivity.calcularDistancia(latitud, longitud, latitudUser, longitudUser);
+                mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria).snippet("Distancia: "+distancia+" m").icon(icon));
                 mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(cajero, 15));
                 break;
             default:
@@ -106,15 +111,17 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 while (j < listaCajerosEntidad.size()) {
                     getComisionEntidadBancaria(listaCajerosEntidad.get(j).getEntidadBancaria());
                     LatLng cajeroEntidad = new LatLng(listaCajerosEntidad.get(j).getLatitud(), listaCajerosEntidad.get(j).getLongitud());
+                    distancia=CajeroListActivity.calcularDistancia(listaCajeros.get(j).getLatitud(),listaCajeros.get(j).getLongitud(),
+                            latitudUser,longitudUser);
                     mapa.addMarker(markerOptions.position(cajeroEntidad).title(listaCajerosEntidad.get(j).getEntidadBancaria())
-                            .snippet(listaCajerosEntidad.get(j).getUriFotoCajero()).icon(icon));
+                            .snippet("Distancia: "+distancia+" m").icon(icon));
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ciudadCaceres, 13));
                     j++;
                 }
                 break;
         }
         if(permisos)
-            mapa.addMarker(markerOptions.position(user).title("user").icon(BitmapDescriptorFactory.fromResource(R.mipmap.star_on)));
+            mapa.addMarker(markerOptions.position(user).title("user") .snippet("cajeroooooooooooo").icon(BitmapDescriptorFactory.fromResource(R.mipmap.estoy_aqui)));
 
         dbhelper.close();
     }
@@ -211,12 +218,12 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             latitudUser=loc.getLatitude();
             longitudUser=loc.getLongitude();
             user = new LatLng(loc.getLatitude(),loc.getLongitude());
-            Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(getBaseContext()," lat:" + latitudUser + ", lon:" + longitudUser, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext()," lat:" + latitudUser + ", lon:" + longitudUser, Toast.LENGTH_LONG).show();
         //mapa.addMarker(markerOptions.position(user).title("user").icon(BitmapDescriptorFactory.fromResource(R.mipmap.star_on)));
         Log.i(TAG, "Lat " + location.getLatitude() + " Long " + location.getLongitude());
     }
