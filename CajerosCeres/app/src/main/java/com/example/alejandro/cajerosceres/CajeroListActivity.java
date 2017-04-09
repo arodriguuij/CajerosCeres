@@ -67,6 +67,22 @@ public class CajeroListActivity extends AppCompatActivity {
         setupRecyclerView((RecyclerView) recyclerView);
     }
 
+    @Override
+    protected void onStop() {
+        // Obtener entidad bancaria seleccionada y el orden para obtenerlo en caso
+        // de hacer back en los detalles de un cajero al necesitar estos datos para filtrar el listado
+        /****************************************************************************************************/
+        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("entidadBancariaSeleccion", entidadBancariaSeleccion);
+        editor.putString("orden", orden);
+        editor.putString("latitudUser",String.valueOf(latitudUser));
+        editor.putString("longitudUser",String.valueOf(longitudUser));
+        editor.commit();
+        /****************************************************************************************************/
+        super.onStop();
+    }
+
     //cargar configuración aplicación Android usando SharedPreferences
     public void cargarConfiguracion() {
         PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
@@ -94,15 +110,16 @@ public class CajeroListActivity extends AppCompatActivity {
             latitudUser = Double.parseDouble(prefs.getString("latitudUser", ""));
             longitudUser = Double.parseDouble(prefs.getString("longitudUser", ""));
         }
+        else{
+            /* TODO Retringir sobrescribir*/
+            latitudUser = (Double) extras.get("latitudUser");
+            longitudUser = (Double) extras.get("longitudUser");
+            // Tipo de orden de la lista
+            orden = (String) extras.getString("orden");
+        }
         /****************************************************************************************************/
 
         getEntidadBancariaUsuario();
-
-        latitudUser = (Double) extras.get("latitudUser");
-        longitudUser = (Double) extras.get("longitudUser");
-
-        // Tipo de orden de la lista
-        orden = (String) extras.getString("orden");
 
         switch (entidadBancariaSeleccion) {
             case "Todas":
@@ -121,19 +138,6 @@ public class CajeroListActivity extends AppCompatActivity {
         if (orden.equals("favoritos")) {
             favoritos();
         }
-
-        // Obtener entidad bancaria seleccionada y el orden para obtenerlo en caso
-        // de hacer back en los detalles de un cajero al necesitar estos datos para filtrar el listado
-        /****************************************************************************************************/
-        SharedPreferences prefs = getSharedPreferences("preferenciasBusqueda", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("entidadBancariaSeleccion", entidadBancariaSeleccion);
-        editor.putString("orden", orden);
-        extras.putDouble("latitudUser",latitudUser);
-        extras.putDouble("longitudUser",longitudUser);
-        editor.commit();
-        /****************************************************************************************************/
-
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -176,10 +180,12 @@ public class CajeroListActivity extends AppCompatActivity {
 
             if (moneda.equals("Libras"))
                 holder.mcomisionView.setText(comision + "£");
-            else if (moneda.equals("Euros"))
-                holder.mcomisionView.setText(comision + "€");
-            if (comision.equals(0.0))
-                holder.mcomisionView.setTextColor(Color.parseColor("#57A639"));
+            else
+                if (moneda.equals("Euros"))
+                    holder.mcomisionView.setText(comision + "€");
+
+            //if (comision.equals(0.0))
+            //    holder.mcomisionView.setTextColor(Color.parseColor("#57A639"));
 
 
             if (holder.mItem.isFav() == 1)
@@ -299,20 +305,15 @@ public class CajeroListActivity extends AppCompatActivity {
     }
 
     public void favoritos() {
-        cajerosArray = new ArrayList<Cajero>();
-        dbhelper = new DataBaseHelperCajeros(getBaseContext());
-        try (Cursor cur = dbhelper.getCursorCajero()) {
-            while (cur.moveToNext()) {
-                Cajero c = new Cajero(cur.getInt(0), cur.getString(1), cur.getString(2)
-                        , cur.getDouble(3), cur.getDouble(4), cur.getString(5), cur.getInt(6));
-                distancia = calcularDistancia(c.getLatitud(), c.getLongitud(), latitudUser, longitudUser);
-
-                if ((distanciaMaximaInt > distancia) && (c.isFav() == 1))
-                    cajerosArray.add(c);
+        int i=0;
+        List<Cajero> cajerosArrayAux = new ArrayList<Cajero>();
+        while(i < cajerosArray.size()){
+            if(cajerosArray.get(i).isFav()==1){
+                cajerosArrayAux.add(cajerosArray.get(i));
             }
-            cur.close();
+            i++;
         }
-        dbhelper.close();
+        cajerosArray = cajerosArrayAux;
     }
 
     public void asignarCajero(Cajero aux, Cajero aux2) {
@@ -365,54 +366,22 @@ public class CajeroListActivity extends AppCompatActivity {
 
     private double getComisionEntidadBancaria(String entidadBancariaLista) {
         switch (entidadBancariaLista) {
-            case "BancoPopular":
-                comision = e.getComisionBancaPueyo();
-                break;
-            case "BancaPueyo":
-                comision = e.getComisionBancoPopular();
-                break;
-            case "Bankinter":
-                comision = e.getComisionBankinter();
-                break;
-            case "BBVA":
-                comision = e.getComisionBBVA();
-                break;
-            case "Caixa":
-                comision = e.getComisionCaixa();
-                break;
-            case "CaixaGeral":
-                comision = e.getComisionCaixaGeral();
-                break;
-            case "CajaAlmendralejo":
-                comision = e.getComisionCajaAlmendralejo();
-                break;
-            case "CajaBadajoz":
-                comision = e.getComisionCajaBadajoz();
-                break;
-            case "CajaDuero":
-                comision = e.getComisionCajaDuero();
-                break;
-            case "CajaExtremadura":
-                comision = e.getComisionCajaExtremadura();
-                break;
-            case "CajaRural":
-                comision = e.getComisionCajaRural();
-                break;
-            case "DeutscheBank":
-                comision = e.getComisionDeutscheBank();
-                break;
-            case "Liberban":
-                comision = e.getComisionLiberbank();
-                break;
-            case "Popular":
-                comision = e.getComisionPopular();
-                break;
-            case "Sabadell":
-                comision = e.getComisionSabadell();
-                break;
-            case "Santander":
-                comision = e.getComisionSantander();
-                break;
+            case "BancoPopular":    comision = e.getComisionBancaPueyo();       break;
+            case "BancaPueyo":      comision = e.getComisionBancoPopular();     break;
+            case "Bankinter":       comision = e.getComisionBankinter();        break;
+            case "BBVA":            comision = e.getComisionBBVA();             break;
+            case "Caixa":           comision = e.getComisionCaixa();            break;
+            case "CaixaGeral":      comision = e.getComisionCaixaGeral();       break;
+            case "CajaAlmendralejo":comision = e.getComisionCajaAlmendralejo(); break;
+            case "CajaBadajoz":     comision = e.getComisionCajaBadajoz();      break;
+            case "CajaDuero":       comision = e.getComisionCajaDuero();        break;
+            case "CajaExtremadura": comision = e.getComisionCajaExtremadura();  break;
+            case "CajaRural":       comision = e.getComisionCajaRural();        break;
+            case "DeutscheBank":    comision = e.getComisionDeutscheBank();     break;
+            case "Liberban":        comision = e.getComisionLiberbank();        break;
+            case "Popular":         comision = e.getComisionPopular();          break;
+            case "Sabadell":        comision = e.getComisionSabadell();         break;
+            case "Santander":       comision = e.getComisionSantander();        break;
         }
         return comision;
     }

@@ -13,8 +13,8 @@
 
     <PreferenceCategory android:title="@string/Entidad_bancaria_usuario">
         <ListPreference
-            android:entries="@array/listentries"
-            android:entryValues="@array/listvalues"
+            android:entries="@array/listentriesEntidadesBancarias"
+            android:entryValues="@array/listvaluesEntidadesBancarias"
             android:defaultValue="BBVA"
             android:key="PREF_LIST_ENTIDAD"
             android:title="@string/entidad_bancaria_usuario" />

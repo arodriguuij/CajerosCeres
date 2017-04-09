@@ -19,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -56,33 +55,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         obtenerLocalizacion();
     }
 
-    public void obtenerLocalizacion(){
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    public void obtenerLocalizacion() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
             //Requiere permisos para Android 6.0
             Log.e(TAG, "No se tienen permisos necesarios!, se requieren.");
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
+            //ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
         Log.i(TAG, "Permisos necesarios OK!.");
 
         //Crea el objeto que gestiona las localizaciones
-        handle = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        handle = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 
         Criteria c = new Criteria();
+        //c.setCostAllowed(true); /**/
+        //c.setAccuracy(Criteria.NO_REQUIREMENT);/**/
+        //c.setPowerRequirement(Criteria.NO_REQUIREMENT);/**/
         c.setAccuracy(Criteria.ACCURACY_FINE);
+
         // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
-        provider = handle.getBestProvider(c, true);
-        // Se activan las notificaciones de localización con los parámetros:
-        // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
-        handle.requestLocationUpdates(provider, 10000, 1, this);
-        //Obtenemos la última posición conocida dada por el proveedor
-        Location loc = handle.getLastKnownLocation(provider);
-        latitudUser=loc.getLatitude();
-        longitudUser=loc.getLongitude();
-        user = new LatLng(loc.getLatitude(),loc.getLongitude());
-        //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+        try {
+            provider = handle.getBestProvider(c, true);
+            if(provider == null)
+                provider = handle.getBestProvider(c, false);
+
+            // Se activan las notificaciones de localización con los parámetros:
+            // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
+            handle.requestLocationUpdates(provider, 10000, 1, this);
+            //Obtenemos la última posición conocida dada por el proveedor
+            Location loc = handle.getLastKnownLocation(provider);
+
+            latitudUser = loc.getLatitude();
+            longitudUser = loc.getLongitude();
+            Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
+            setSharedPreferences();
+
+            user = new LatLng(loc.getLatitude(), loc.getLongitude());
+            //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
+        }
+    }
+
+    public void setSharedPreferences(){
+        SharedPreferences.Editor editor = getSharedPreferences("preferenciasBusqueda", MODE_PRIVATE).edit();
+        editor.putString("latitudUser",String.valueOf(latitudUser));
+        editor.putString("longitudUser",String.valueOf(longitudUser));
+        editor.commit();
     }
 
     @Override
@@ -193,6 +218,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.putString("orden", orden);
         editor.commit();
     }
-
-
 }

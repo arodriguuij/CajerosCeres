@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
@@ -64,11 +63,11 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_fragment);
 
+        obtenerLocalizacion();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        obtenerLocalizacion();
 
         //Obtenemos las coordenadas del Cajero
         Intent intent = getIntent();
@@ -121,7 +120,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
         }
         if(permisos)
-            mapa.addMarker(markerOptions.position(user).title("user") .snippet("cajeroooooooooooo").icon(BitmapDescriptorFactory.fromResource(R.mipmap.estoy_aqui)));
+            if(user != null)
+                mapa.addMarker(markerOptions.position(user).title("user") .snippet("cajeroooooooooooo").icon(BitmapDescriptorFactory.fromResource(R.mipmap.estoy_aqui)));
 
         dbhelper.close();
     }
@@ -209,16 +209,20 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
             Criteria c = new Criteria();
             c.setAccuracy(Criteria.ACCURACY_FINE);
             // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
-            provider = handle.getBestProvider(c, true);
-            // Se activan las notificaciones de localización con los parámetros:
-            // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
-            handle.requestLocationUpdates(provider, 10000, 1, this);
-            //Obtenemos la última posición conocida dada por el proveedor
-            Location loc = handle.getLastKnownLocation(provider);
-            latitudUser=loc.getLatitude();
-            longitudUser=loc.getLongitude();
-            user = new LatLng(loc.getLatitude(),loc.getLongitude());
-            //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+            try {
+                provider = handle.getBestProvider(c, true);
+                // Se activan las notificaciones de localización con los parámetros:
+                // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
+                handle.requestLocationUpdates(provider, 10000, 1, this);
+                //Obtenemos la última posición conocida dada por el proveedor
+                Location loc = handle.getLastKnownLocation(provider);
+                latitudUser=loc.getLatitude();
+                longitudUser=loc.getLongitude();
+                user = new LatLng(loc.getLatitude(),loc.getLongitude());
+                //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
+            }
     }
 
     @Override
