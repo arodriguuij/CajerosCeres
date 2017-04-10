@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,8 +27,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 // Clave de API 1	5 mar. 2017	Ninguna	AIzaSyAa-XMZqW0X2FGWOeAZbCnnkj2rYF9uunI
 
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
@@ -38,7 +42,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double longitudUser;
     private double latitudUser;
     private String entidadBancaria;
-    private String uriFotoCajero;
+    private String direccion;
     private List<Cajero> listaCajeros;
     private List<Cajero> listaCajerosEntidad;
     private String cuantosCajeros;
@@ -52,6 +56,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng user;
     private Boolean permisos=false;
     private float distancia;
+    private Location loc;
 
     //Minimo tiempo para updates en Milisegundos
     private static final long MIN_CAMBIO_DISTANCIA_PARA_UPDATES = 10; // 10 metros
@@ -92,6 +97,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng cajero = new LatLng(listaCajeros.get(i).getLatitud(), listaCajeros.get(i).getLongitud());
                     distancia=CajeroListActivity.calcularDistancia(listaCajeros.get(i).getLatitud(),listaCajeros.get(i).getLongitud(),
                             latitudUser,longitudUser);
+
                     mapa.addMarker(markerOptions.position(cajero).title(listaCajeros.get(i).getEntidadBancaria())
                             .snippet("Distancia: "+distancia+" m").icon(icon));
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ciudadCaceres, 13));
@@ -102,7 +108,12 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getComisionEntidadBancaria(entidadBancaria);
                 LatLng cajero = new LatLng(latitud, longitud);
                 distancia=CajeroListActivity.calcularDistancia(latitud, longitud, latitudUser, longitudUser);
-                mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria).snippet("Distancia: "+distancia+" m").icon(icon));
+                loc = new Location("");
+                loc.setLatitude(latitud);
+                loc.setLongitude(longitud);
+                setLocation(loc);
+                mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria)
+                        .snippet("Distancia: "+distancia+" m --- Direccion: "+direccion).icon(icon));
                 mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(cajero, 15));
                 break;
             default:
@@ -166,7 +177,6 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 longitud = (double) extras.get("longitud");
                 latitud = (double) extras.get("latitud");
                 entidadBancaria = (String) extras.get("entidadBancaria");
-                uriFotoCajero = (String) extras.get("uriFotoCajero");
                 break;
             default:
                 listaCajeros = new ArrayList<Cajero>();
@@ -240,4 +250,20 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onProviderDisabled(String provider) {  }
+
+    public void setLocation(Location loc) {
+        //Obtener la direcci—n de la calle a partir de la latitud y la longitud
+        if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
+            try {
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                List<Address> list = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+                if (!list.isEmpty()) {
+                    Address address = list.get(0);
+                    direccion=address.getAddressLine(0);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -22,8 +25,10 @@ import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CajeroDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
@@ -35,7 +40,8 @@ public class CajeroDetailFragment extends Fragment {
     private ImageView logo;
     private ProgressBar progressBar;
     private ImageButton mImageButtonFav;
-
+    private Location loc;
+    private String direccion;
 
     public CajeroDetailFragment() { }
 
@@ -106,6 +112,12 @@ public class CajeroDetailFragment extends Fragment {
                 }
             });
 
+            loc = new Location("");
+            loc.setLatitude(cajero.getLatitud());
+            loc.setLongitude(cajero.getLongitud());
+            setLocation(loc);
+            ((TextView) rootView.findViewById(R.id.textViewDireccion)).setText(direccion);
+
 
             progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar2);
             Picasso.with(getContext()).load(cajero.getUriFotoCajero()).into(logo);
@@ -148,4 +160,19 @@ public class CajeroDetailFragment extends Fragment {
         }
     }
 
+    public void setLocation(Location loc) {
+        //Obtener la direcci—n de la calle a partir de la latitud y la longitud
+        if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
+            try {
+                Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                List<Address> list = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+                if (!list.isEmpty()) {
+                    Address address = list.get(0);
+                    direccion=address.getAddressLine(0);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
