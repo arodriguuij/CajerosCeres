@@ -3,6 +3,7 @@ package com.example.alejandro.cajerosceres;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
@@ -12,12 +13,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.DataBaseHelperEntidadesBancarias;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.EntidadBancaria;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -31,24 +35,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.alejandro.cajerosceres.CajeroListActivity.getComisionEntidadBancaria;
+
 // Clave de API 1	5 mar. 2017	Ninguna	AIzaSyAa-XMZqW0X2FGWOeAZbCnnkj2rYF9uunI
 
 public class MapaActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private DataBaseHelperCajeros dbhelper;
+    private DataBaseHelperEntidadesBancarias dataBaseHelperEntidadesBancarias;
     private GoogleMap mapa;
+    private String moneda;
     private double longitud;
     private double latitud;
     private double longitudUser;
     private double latitudUser;
     private String entidadBancaria;
+    private String entidadBancariaUsuario;
+    private EntidadBancaria entidadBancariaUsuarioE;
     private String direccion;
+    private Double comision;
     private List<Cajero> listaCajeros;
     private List<Cajero> listaCajerosEntidad;
     private String cuantosCajeros;
     private BitmapDescriptor icon;
     private static final String TAG = "LocationActivity";
-    private LocationManager mLocMgr;
     private Bundle extras;
     private MarkerOptions markerOptions;
     private LocationManager handle; //Gestor del servicio de localización
@@ -57,11 +68,6 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Boolean permisos=false;
     private float distancia;
     private Location loc;
-
-    //Minimo tiempo para updates en Milisegundos
-    private static final long MIN_CAMBIO_DISTANCIA_PARA_UPDATES = 10; // 10 metros
-    //Minimo tiempo para updates en Milisegundos
-    private static final long MIN_TIEMPO_ENTRE_UPDATES = 1000 * 60 * 1; // 1 minuto
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +79,9 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        moneda = sharedPref.getString(PrefFragment.KEY_PREF_MONEDAS, "Euros");
 
         //Obtenemos las coordenadas del Cajero
         Intent intent = getIntent();
@@ -86,26 +95,31 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions = new MarkerOptions();
         LatLng ciudadCaceres = new LatLng(39.4752169, -6.372337600000037);
         cuantosCajeros = (String) extras.get("cuantosCajeros");
-
+        entidadBancariaUsuario = (String) extras.get("entidadBancariaUsuario");
 
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
+        entidadBancariaUsuarioE=getEntidadBancariaUsuario();
+
         switch (cuantosCajeros) {
+            // Sin filtro de cajero, todos los carjeros
             case "todosCajeros":
                 int i = 0;
                 while (i < listaCajeros.size()) {
-                    getComisionEntidadBancaria(listaCajeros.get(i).getEntidadBancaria());
+                    getEntidadBancariaIcon(listaCajeros.get(i).getEntidadBancaria());
                     LatLng cajero = new LatLng(listaCajeros.get(i).getLatitud(), listaCajeros.get(i).getLongitud());
                     distancia=CajeroListActivity.calcularDistancia(listaCajeros.get(i).getLatitud(),listaCajeros.get(i).getLongitud(),
                             latitudUser,longitudUser);
+                    comision=getComisionEntidadBancaria(listaCajeros.get(i).getEntidadBancaria(),entidadBancariaUsuarioE);
 
                     mapa.addMarker(markerOptions.position(cajero).title(listaCajeros.get(i).getEntidadBancaria())
-                            .snippet("Distancia: "+distancia+" m").icon(icon));
+                            .snippet("Distancia: "+distancia+" m --- Comisión: "+comision+" "+moneda).icon(icon));
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ciudadCaceres, 13));
                     i++;
                 }
                 break;
+            // Un único cajero seleccionado
             case "unCajero":
-                getComisionEntidadBancaria(entidadBancaria);
+                getEntidadBancariaIcon(entidadBancaria);
                 LatLng cajero = new LatLng(latitud, longitud);
                 distancia=CajeroListActivity.calcularDistancia(latitud, longitud, latitudUser, longitudUser);
                 loc = new Location("");
@@ -113,18 +127,21 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 loc.setLongitude(longitud);
                 setLocation(loc);
                 mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria)
-                        .snippet("Distancia: "+distancia+" m --- Direccion: "+direccion).icon(icon));
+                        .snippet("Distancia: "+distancia+" m --- Direccion: "+direccion+" --- Comisión: "+comision+" "+moneda).icon(icon));
                 mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(cajero, 15));
                 break;
+            // Conjunto de cajeros de una determinada entidad bancaria
             default:
                 int j = 0;
                 while (j < listaCajerosEntidad.size()) {
-                    getComisionEntidadBancaria(listaCajerosEntidad.get(j).getEntidadBancaria());
+                    getEntidadBancariaIcon(listaCajerosEntidad.get(j).getEntidadBancaria());
                     LatLng cajeroEntidad = new LatLng(listaCajerosEntidad.get(j).getLatitud(), listaCajerosEntidad.get(j).getLongitud());
                     distancia=CajeroListActivity.calcularDistancia(listaCajeros.get(j).getLatitud(),listaCajeros.get(j).getLongitud(),
                             latitudUser,longitudUser);
+                    comision=getComisionEntidadBancaria(listaCajeros.get(j).getEntidadBancaria(),entidadBancariaUsuarioE);
+
                     mapa.addMarker(markerOptions.position(cajeroEntidad).title(listaCajerosEntidad.get(j).getEntidadBancaria())
-                            .snippet("Distancia: "+distancia+" m").icon(icon));
+                            .snippet("Distancia: "+distancia+" m --- Comisión: "+comision+" "+moneda).icon(icon));
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(ciudadCaceres, 13));
                     j++;
                 }
@@ -137,7 +154,26 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         dbhelper.close();
     }
 
-    private void getComisionEntidadBancaria(String entidadBancariaLista) {
+
+    private EntidadBancaria getEntidadBancariaUsuario() {
+        dataBaseHelperEntidadesBancarias = new DataBaseHelperEntidadesBancarias(getBaseContext());
+        EntidadBancaria e = null;
+        try (Cursor cur = dataBaseHelperEntidadesBancarias.getCursorEntidadBancaria()) {
+            while(cur.moveToNext()) {
+                if(cur.getString(1).equals(entidadBancariaUsuario))
+                    e = new EntidadBancaria(cur.getInt(0), cur.getString(1), cur.getDouble(2)
+                            , cur.getDouble(3), cur.getDouble(4), cur.getDouble(5), cur.getDouble(6)
+                            , cur.getDouble(7), cur.getDouble(8), cur.getDouble(9), cur.getDouble(10)
+                            , cur.getDouble(11), cur.getDouble(12), cur.getDouble(13), cur.getDouble(14)
+                            , cur.getDouble(15), cur.getDouble(16), cur.getDouble(17));
+            }
+            cur.close();
+            dataBaseHelperEntidadesBancarias.close();
+        }
+        return e;
+    }
+
+    private void getEntidadBancariaIcon(String entidadBancariaLista) {
         switch (entidadBancariaLista) {
             case "BancoPopular":    icon = BitmapDescriptorFactory.fromResource(R.mipmap.popular);              break;
             case "BancaPueyo":      icon = BitmapDescriptorFactory.fromResource(R.mipmap.banca_puello);         break;
@@ -158,6 +194,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    // Obtención del cajero o los cajeros de la base de datos
     public void obtenerCajeros() {
         dbhelper = new DataBaseHelperCajeros(getBaseContext());
         cuantosCajeros = (String) extras.get("cuantosCajeros");
@@ -229,7 +266,6 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 latitudUser=loc.getLatitude();
                 longitudUser=loc.getLongitude();
                 user = new LatLng(loc.getLatitude(),loc.getLongitude());
-                //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
             }
@@ -237,8 +273,6 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onLocationChanged(Location location) {
-        //Toast.makeText(getBaseContext()," lat:" + latitudUser + ", lon:" + longitudUser, Toast.LENGTH_LONG).show();
-        //mapa.addMarker(markerOptions.position(user).title("user").icon(BitmapDescriptorFactory.fromResource(R.mipmap.star_on)));
         Log.i(TAG, "Lat " + location.getLatitude() + " Long " + location.getLongitude());
     }
 
@@ -251,8 +285,8 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onProviderDisabled(String provider) {  }
 
+    //Obtener la dirección de la calle a partir de la latitud y la longitud
     public void setLocation(Location loc) {
-        //Obtener la direcci—n de la calle a partir de la latitud y la longitud
         if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
             try {
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());

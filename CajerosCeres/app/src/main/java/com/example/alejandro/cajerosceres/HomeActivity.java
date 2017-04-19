@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.DataBaseHelperEntidadesBancarias;
-
 public class HomeActivity extends AppCompatActivity {
-    private DataBaseHelperEntidadesBancarias dbhelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,22 +13,20 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.home);
     }
 
+    // Método que se acciona al tocar la pantalla
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         final int action = event.getAction();
+        // Controla que solo se cuente un evento en la pantalla (una sola dirección de pulsación)
         if(action == MotionEvent.ACTION_DOWN) {
-            //startService(new Intent(HomeActivity.this, BroadcastReceiverAuto.class));
+
+            // Ejecución del BroadcastReceiver que ejecuta la obtención de datos mediante JSON del opendata de Cáceres
+            // y la creación de una alarma que obtiene estos cada 24 horas
             Intent intentBroadcastReceiver = new Intent(getApplicationContext(), BroadcastReceiverAuto.class);
             sendBroadcast(intentBroadcastReceiver);
-            /*
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiverAuto();
-            //BroadcastReceiverAuto.setMainActivityHandler(this);    // Le pasamos este activity para vincularlos
-            IntentFilter callInterceptorIntentFilter = new IntentFilter("android.intent.action.ANY_ACTION");
-            registerReceiver(broadcastReceiver, callInterceptorIntentFilter);
 
-            /*Intent intentBroadcastReceiver = new Intent(getApplicationContext(), BroadcastReceiverAuto.class);
-            startActivity(intentBroadcastReceiver);*/
+            // Intent que llama a la actividad principal de la aplicación
             Intent intent2 = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent2);
         }

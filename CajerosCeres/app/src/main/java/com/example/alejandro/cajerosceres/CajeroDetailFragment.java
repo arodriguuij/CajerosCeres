@@ -34,7 +34,6 @@ public class CajeroDetailFragment extends Fragment implements Callback{
     private Cajero cajero;
     private List<Cajero> listaCajeros;
     private DataBaseHelperCajeros dbhelper;
-    //private MyTask myTask;
     private View rootView;
     private ImageView logo;
     private ProgressBar progressBar;
@@ -117,50 +116,14 @@ public class CajeroDetailFragment extends Fragment implements Callback{
             setLocation(loc);
             ((TextView) rootView.findViewById(R.id.textViewDireccion)).setText(direccion);
 
-
             progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar2);
             loadImage();
-
-            //myTask = new MyTask();
-            //myTask.execute();
         }
         return rootView;
     }
-/*
-    private class MyTask extends AsyncTask<String, String, String> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result){
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
-    }
-*/
+    // Obtener la dirección de la calle a partir de la latitud y la longitud
     public void setLocation(Location loc) {
-        //Obtener la direcci—n de la calle a partir de la latitud y la longitud
         if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
             try {
                 Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
@@ -175,6 +138,7 @@ public class CajeroDetailFragment extends Fragment implements Callback{
         }
     }
 
+    // Carga una progressBar mientras la imagen aún no se ha descargado y mostrado
     private synchronized void loadImage() {
         Picasso.with(getContext()).load(cajero.getUriFotoCajero()).
                 into(logo, new Callback() {

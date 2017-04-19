@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
@@ -24,34 +23,27 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 
 public class ExampleBroadcastReceiver extends BroadcastReceiver {
+
     MyTask myTask;
-    private DataBaseHelperCajeros dbhelper;
+    private DataBaseHelperCajeros dbhelperCajeros;
     private DataBaseHelperEntidadesBancarias dbhelperEntidad;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Aquí lo que se quiera ejecutar
-        System.out.println("*******Temporizador. Actualizar cajeros " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
-        Toast.makeText(context,"AlamarManager. Actualizar cajeros", Toast.LENGTH_LONG).show();
         dbhelperEntidad = new DataBaseHelperEntidadesBancarias(context);
-        dbhelper = new DataBaseHelperCajeros(context);
+        dbhelperCajeros = new DataBaseHelperCajeros(context);
         crearTablaComisiones();
 
         myTask = new MyTask();
         myTask.execute();
 
-        dbhelper.close();
+        dbhelperCajeros.close();
         dbhelperEntidad.close();
-
-        //Intent intent2 = new Intent(context, MainActivity.class);
-        //context.startActivity(intent2);
     }
 
+    // AsyncTask para la recogida de datos del opendata de Cáceres mediante el tratamiento de un JSON
     private class MyTask extends AsyncTask<String, String, String> {
         private static final String URL2 = "http://opendata.caceres.es/GetData/GetData?dataset=om:CajeroAutomatico&format=json";
         AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
@@ -63,7 +55,6 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         protected void onPostExecute(String result){
-            System.out.println("*******TFInnnnnnnnnnnnnnnnnnnnnnnnnnnn " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
             mClient.close();
         }
 
@@ -91,6 +82,7 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    // Lectura del JSON y transformación de los datos en entidades Cajeros y su importación a la base de datos DB_Cajeros
     private class JSONResponseHandler implements ResponseHandler<Void> {
         @Override
         public Void handleResponse(HttpResponse response) throws IOException {
@@ -125,7 +117,7 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
                     JSONObject om_situadoEnVia = cajero.getJSONObject("om_situadoEnVia");
                     c.setDireccion(om_situadoEnVia.getString("value"));
 
-                    dbhelper.importarCajero(c);
+                    dbhelperCajeros.importarCajero(c);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -134,6 +126,7 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    // Importa las comisiones de los cajeros con respecto al resto al sacar 1€
     private void crearTablaComisiones(){
         try (Cursor cur = dbhelperEntidad.getCursorEntidadBancaria()){
             if(cur.getCount()==0){

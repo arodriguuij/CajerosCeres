@@ -1,5 +1,6 @@
 package com.example.alejandro.cajerosceres;
 
+import android.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,11 +24,9 @@ import android.view.MenuItem;
 
 import com.google.android.gms.maps.model.LatLng;
 
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Interfaz, LocationListener {
     private LocationManager handle; //Gestor del servicio de localización
     private String provider;
-    private LatLng user;
     private static final String TAG = "LocationActivity";
     private double longitudUser;
     private double latitudUser;
@@ -76,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     android.Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_COARSE_LOCATION);
         }
         else {
+            /*
             Log.i(TAG, "Permisos necesarios OK!.");
 
             // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
@@ -86,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
                 handle.requestLocationUpdates(provider, 10000, 1, this);
                 //Obtenemos la última posición conocida dada por el proveedor
-
-                //Todo --> Excepcion
                 loc = handle.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 
                 latitudUser = loc.getLatitude();
@@ -95,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
                 setSharedPreferences();
 
-                user = new LatLng(loc.getLatitude(), loc.getLongitude());
-                //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
             }
+            */
+            obtenerLocalizacion2();
         }
     }
 
@@ -112,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
-
                     // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
                     try {
                         provider = handle.getBestProvider(c, true);
@@ -127,8 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             longitudUser = loc.getLongitude();
                             Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
                             setSharedPreferences();
-
-                            user = new LatLng(loc.getLatitude(), loc.getLongitude());
                         }
                             //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
@@ -141,12 +136,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return;
             }
-
             // other 'case' lines to check for other
             // permissions this app might request
         }
     }
-
 
     public void obtenerLocalizacion2(){
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -155,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.e(TAG, "No se tienen permisos necesarios!, se requieren.");
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
+            return;
         }
         Log.i(TAG, "Permisos necesarios OK!.");
 
@@ -173,13 +167,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Location loc = handle.getLastKnownLocation(provider);
             latitudUser=loc.getLatitude();
             longitudUser=loc.getLongitude();
-            //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+            setSharedPreferences();
+
         } catch (Exception e) {
             Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
         }
     }
-
-
+    // Guarda la lititud y longitud del usuario
     public void setSharedPreferences(){
         SharedPreferences.Editor editor = getSharedPreferences("preferenciasBusqueda", MODE_PRIVATE).edit();
         editor.putString("latitudUser",String.valueOf(latitudUser));
@@ -219,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /* App bar */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
         switch (item.getItemId()) {
             case R.id.action_settings:
@@ -260,12 +253,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void responderBusquedaMapaCajeros(String entidadBancariaString) {
+    public void responderBusquedaMapaCajeros(String entidadBancariaString, String entidadBancariaUsuario) {
         Intent Intent = new Intent(getApplicationContext(), MapaActivity.class);
         if(entidadBancariaString.equals("Todas"))
             Intent.putExtra("cuantosCajeros", "todosCajeros");
         else
             Intent.putExtra("cuantosCajeros", entidadBancariaString);
+        Intent.putExtra("entidadBancariaUsuario", entidadBancariaUsuario);
         Intent.putExtra("latitudUser", latitudUser);
         Intent.putExtra("longitudUser", longitudUser);
         startActivity(Intent);
@@ -279,11 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent.putExtra("latitudUser", latitudUser);
         Intent.putExtra("longitudUser", longitudUser);
         guardarConfiguracion(entidadBancariaString, orden);
-        /*
-        PreferenceManager.setDefaultValues(this, R.xml.ajustes, false);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        libras = sharedPref.getBoolean(PrefFragment.KEY_PREF_MONEDA_LIBRAS, false);
-        */
+
         startActivity(Intent);
     }
 
