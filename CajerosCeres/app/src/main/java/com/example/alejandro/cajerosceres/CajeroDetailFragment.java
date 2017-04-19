@@ -7,10 +7,8 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -30,12 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CajeroDetailFragment extends Fragment {
+public class CajeroDetailFragment extends Fragment implements Callback{
     public static final String ARG_ITEM_ID = "item_id";
     private Cajero cajero;
     private List<Cajero> listaCajeros;
     private DataBaseHelperCajeros dbhelper;
-    private MyTask myTask;
+    //private MyTask myTask;
     private View rootView;
     private ImageView logo;
     private ProgressBar progressBar;
@@ -120,14 +119,14 @@ public class CajeroDetailFragment extends Fragment {
 
 
             progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar2);
-            Picasso.with(getContext()).load(cajero.getUriFotoCajero()).into(logo);
+            loadImage();
 
-            myTask = new MyTask();
-            myTask.execute();
+            //myTask = new MyTask();
+            //myTask.execute();
         }
         return rootView;
     }
-
+/*
     private class MyTask extends AsyncTask<String, String, String> {
 
         @Override
@@ -159,7 +158,7 @@ public class CajeroDetailFragment extends Fragment {
             super.onCancelled();
         }
     }
-
+*/
     public void setLocation(Location loc) {
         //Obtener la direcci—n de la calle a partir de la latitud y la longitud
         if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
@@ -174,5 +173,35 @@ public class CajeroDetailFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    private synchronized void loadImage() {
+        Picasso.with(getContext()).load(cajero.getUriFotoCajero()).
+                into(logo, new Callback() {
+            @Override
+            public void onSuccess() {
+                progressBar.setVisibility(View.INVISIBLE);
+                logo.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void onError() {
+                progressBar.setVisibility(View.INVISIBLE);
+                logo.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void onSuccess(){
+        // hide the loader and show the imageview
+        progressBar.setVisibility(View.INVISIBLE);
+        logo.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onError(){
+        // hide the loader and show the imageview which shows the error icon already
+        progressBar.setVisibility(View.INVISIBLE);
+        logo.setVisibility(View.VISIBLE);
     }
 }

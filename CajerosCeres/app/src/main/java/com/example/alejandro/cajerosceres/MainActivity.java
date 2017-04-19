@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "LocationActivity";
     private double longitudUser;
     private double latitudUser;
+    private static final int REQUEST_COARSE_LOCATION = 999;
+    private Location loc;
+    private Criteria c;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,62 +51,134 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        c = new Criteria();
+        c.setAccuracy(Criteria.ACCURACY_FINE);
+        //Crea el objeto que gestiona las localizaciones
+        handle = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        obtenerLocalizacion();
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_drawer_header);
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_main, new BusquedaFragment()).commit();
 
-        obtenerLocalizacion();
     }
 
     public void obtenerLocalizacion() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            Log.e(TAG, "No se tienen permisos necesarios!, se requieren.");
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_COARSE_LOCATION);
+        }
+        else {
+            Log.i(TAG, "Permisos necesarios OK!.");
+
+            // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
+            try {
+                provider = handle.getBestProvider(c, true);
+
+                // Se activan las notificaciones de localización con los parámetros:
+                // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
+                handle.requestLocationUpdates(provider, 10000, 1, this);
+                //Obtenemos la última posición conocida dada por el proveedor
+
+                //Todo --> Excepcion
+                loc = handle.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                latitudUser = loc.getLatitude();
+                longitudUser = loc.getLongitude();
+                Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
+                setSharedPreferences();
+
+                user = new LatLng(loc.getLatitude(), loc.getLongitude());
+                //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_COARSE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+
+                    // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
+                    try {
+                        provider = handle.getBestProvider(c, true);
+                        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            obtenerLocalizacion();
+                        }
+                        else {
+                            handle.requestLocationUpdates(provider, 10000, 1, this);
+                            loc = handle.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                            latitudUser = loc.getLatitude();
+                            longitudUser = loc.getLongitude();
+                            Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
+                            setSharedPreferences();
+
+                            user = new LatLng(loc.getLatitude(), loc.getLongitude());
+                        }
+                            //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
+                    }
+
+                } else {
+                    //Permission denied
+                    obtenerLocalizacion();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
+    public void obtenerLocalizacion2(){
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //Requiere permisos para Android 6.0
             Log.e(TAG, "No se tienen permisos necesarios!, se requieren.");
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION}, 225);
-            //ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
         }
         Log.i(TAG, "Permisos necesarios OK!.");
 
         //Crea el objeto que gestiona las localizaciones
-        handle = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        handle = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
         Criteria c = new Criteria();
-        //c.setCostAllowed(true); /**/
-        //c.setAccuracy(Criteria.NO_REQUIREMENT);/**/
-        //c.setPowerRequirement(Criteria.NO_REQUIREMENT);/**/
         c.setAccuracy(Criteria.ACCURACY_FINE);
-
         // Obtiene el mejor proveedor en función del criterio asignado (la mejor precisión posible)
         try {
             provider = handle.getBestProvider(c, true);
-            if(provider == null)
-                provider = handle.getBestProvider(c, false);
-
             // Se activan las notificaciones de localización con los parámetros:
             // proveedor, tiempo mínimo de actualización, distancia mínima, Locationlistener
             handle.requestLocationUpdates(provider, 10000, 1, this);
             //Obtenemos la última posición conocida dada por el proveedor
             Location loc = handle.getLastKnownLocation(provider);
-
-            latitudUser = loc.getLatitude();
-            longitudUser = loc.getLongitude();
-            Log.i(TAG, "latitudUser= " + latitudUser + "longitudUser" + longitudUser);
-            setSharedPreferences();
-
-            user = new LatLng(loc.getLatitude(), loc.getLongitude());
+            latitudUser=loc.getLatitude();
+            longitudUser=loc.getLongitude();
             //Toast.makeText(getBaseContext()," latitud:" + latitudUser + ", longitd:" + longitudUser, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Log.i(TAG, "Exception while fetch GPS at: " + e.getMessage());
         }
     }
+
 
     public void setSharedPreferences(){
         SharedPreferences.Editor editor = getSharedPreferences("preferenciasBusqueda", MODE_PRIVATE).edit();

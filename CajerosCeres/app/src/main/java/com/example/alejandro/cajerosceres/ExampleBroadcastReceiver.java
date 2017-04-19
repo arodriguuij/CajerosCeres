@@ -1,18 +1,17 @@
 package com.example.alejandro.cajerosceres;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.example.alejandro.cajerosceres.DB_Cajeros.Cajero;
 import com.example.alejandro.cajerosceres.DB_Cajeros.DataBaseHelperCajeros;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.DataBaseHelperEntidadesBancarias;
+import com.example.alejandro.cajerosceres.DB_EntidadesBancarias.EntidadBancaria;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -24,23 +23,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class ExampleBroadcastReceiver extends BroadcastReceiver {
     MyTask myTask;
     private DataBaseHelperCajeros dbhelper;
+    private DataBaseHelperEntidadesBancarias dbhelperEntidad;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         // Aquí lo que se quiera ejecutar
         System.out.println("*******Temporizador. Actualizar cajeros " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
         Toast.makeText(context,"AlamarManager. Actualizar cajeros", Toast.LENGTH_LONG).show();
-        myTask = new MyTask();
+        dbhelperEntidad = new DataBaseHelperEntidadesBancarias(context);
         dbhelper = new DataBaseHelperCajeros(context);
-        myTask.execute();
-        dbhelper.close();
+        crearTablaComisiones();
 
-        Intent intent2 = new Intent(context, MainActivity.class);
-        context.startActivity(intent2);
+        myTask = new MyTask();
+        myTask.execute();
+
+        dbhelper.close();
+        dbhelperEntidad.close();
+
+        //Intent intent2 = new Intent(context, MainActivity.class);
+        //context.startActivity(intent2);
     }
 
     private class MyTask extends AsyncTask<String, String, String> {
@@ -54,6 +63,7 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         protected void onPostExecute(String result){
+            System.out.println("*******TFInnnnnnnnnnnnnnnnnnnnnnnnnnnn " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
             mClient.close();
         }
 
@@ -122,5 +132,46 @@ public class ExampleBroadcastReceiver extends BroadcastReceiver {
             }
             return null;
         }
+    }
+
+    private void crearTablaComisiones(){
+        try (Cursor cur = dbhelperEntidad.getCursorEntidadBancaria()){
+            if(cur.getCount()==0){
+                EntidadBancaria eBancoPopular = new EntidadBancaria(1,"BancoPopular",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eBancaPueyo = new EntidadBancaria(2,"BancaPueyo",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eBankinter = new EntidadBancaria(3,"Bankinter",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eBBVA = new EntidadBancaria(4,"BBVA",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCaixa = new EntidadBancaria(5,"Caixa",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCaixaGeral = new EntidadBancaria(6,"CaixaGeral",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCajaAlmendralejo = new EntidadBancaria(7,"CajaAlmendralejo",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCajaBadajoz = new EntidadBancaria(8,"CajaBadajoz",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCajaDuero = new EntidadBancaria(9,"CajaDuero",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCajaExtremadura = new EntidadBancaria(10,"CajaExtremadura",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eCajaRural = new EntidadBancaria(11,"CajaRural",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eDeutscheBank = new EntidadBancaria(12,"DeutscheBank",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eLiberban = new EntidadBancaria(13,"Liberban",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria ePopular = new EntidadBancaria(14,"Popular",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eSabadell = new EntidadBancaria(15,"Sabadell",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                EntidadBancaria eSantander = new EntidadBancaria(16,"Santander",3.0,3.0,1.0,1.87,2.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,2.0,0.0,1.8,1.85);
+                dbhelperEntidad.importarCajero(eBancoPopular);
+                dbhelperEntidad.importarCajero(eBancaPueyo);
+                dbhelperEntidad.importarCajero(eBankinter);
+                dbhelperEntidad.importarCajero(eBBVA);
+                dbhelperEntidad.importarCajero(eCaixa);
+                dbhelperEntidad.importarCajero(eCaixaGeral);
+                dbhelperEntidad.importarCajero(eCajaAlmendralejo);
+                dbhelperEntidad.importarCajero(eCajaBadajoz);
+                dbhelperEntidad.importarCajero(eCajaDuero);
+                dbhelperEntidad.importarCajero(eCajaExtremadura);
+                dbhelperEntidad.importarCajero(eCajaRural);
+                dbhelperEntidad.importarCajero(eDeutscheBank);
+                dbhelperEntidad.importarCajero(eLiberban);
+                dbhelperEntidad.importarCajero(ePopular);
+                dbhelperEntidad.importarCajero(eSabadell);
+                dbhelperEntidad.importarCajero(eSantander);
+                cur.close();
+            }
+        }
+        dbhelperEntidad.close();
     }
 }

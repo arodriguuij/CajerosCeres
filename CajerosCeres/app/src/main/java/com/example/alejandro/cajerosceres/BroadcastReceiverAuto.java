@@ -17,10 +17,13 @@ public class BroadcastReceiverAuto extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent){
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+        //if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
 
             dbhelper = new DataBaseHelperEntidadesBancarias(context);
             crearTablaComisiones();
+
+            Intent intentBroadcastReceiver = new Intent(context, ExampleBroadcastReceiver.class);
+            context.sendBroadcast(intentBroadcastReceiver);
 
             Toast.makeText(context, "BroadcastReceiverAuto", Toast.LENGTH_SHORT).show();
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -33,15 +36,16 @@ public class BroadcastReceiverAuto extends BroadcastReceiver {
             // El cuarto hace referencia al receiver que se va a ejecutar.
             am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 6*1000, pendingIntent);
 
+
             /*Cancelar*/
             //AlarmManager am = (AlarmManager) HomeActivity.this.getSystemService(ALARM_SERVICE);
             //Intent intent = new Intent(getApplicationContext(), ExampleBroadcastReceiver.class);
             //PendingIntent pendingIntent = PendingIntent.getBroadcast(HomeActivity.this, 1234567, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             //am.cancel(pendingIntent);
 
-            Intent pushIntent = new Intent(context, MainActivity.class);
-            context.startService(pushIntent);
-        }
+            //Intent pushIntent = new Intent(context, MainActivity.class);
+            //context.startService(pushIntent);
+        //}
     }
 
     private void crearTablaComisiones(){

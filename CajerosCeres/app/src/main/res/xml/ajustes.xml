@@ -24,7 +24,7 @@
         <ListPreference
             android:entries="@array/listentriesDistancia"
             android:entryValues="@array/listvaluesDistancia"
-            android:defaultValue="100000"
+            android:defaultValue="Infinito"
             android:key="PREF_LIST_DISTANCIA"
             android:title="@string/distancia_maxima" />
     </PreferenceCategory>

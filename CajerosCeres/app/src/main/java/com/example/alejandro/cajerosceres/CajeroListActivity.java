@@ -165,6 +165,8 @@ public class CajeroListActivity extends AppCompatActivity {
             holder.mEntidadBancariaView.setTextColor(Color.parseColor("#49678D"));
 
             distancia = calcularDistancia(holder.mItem.getLatitud(), holder.mItem.getLongitud(), latitudUser, longitudUser);
+
+
             holder.mDistancia.setText(Float.toString(distancia) + " m");
             if (distancia > 1000)
                 holder.mDistancia.setTextColor(Color.parseColor("#FE0000"));
@@ -296,7 +298,7 @@ public class CajeroListActivity extends AppCompatActivity {
                 distanciaAux = calcularDistancia(cajerosArray.get(j).getLatitud(), cajerosArray.get(j).getLongitud(),
                         latitudUser, longitudUser);
 
-                if (distancia > distanciaAux) {
+                if (distancia < distanciaAux) {
                     asignarCajero(aux, cajerosArray.get(j + 1));
                     asignarCajero(cajerosArray.get(j + 1), cajerosArray.get(j));
                     asignarCajero(cajerosArray.get(j), aux);
@@ -378,7 +380,7 @@ public class CajeroListActivity extends AppCompatActivity {
             case "CajaExtremadura": comision = e.getComisionCajaExtremadura();  break;
             case "CajaRural":       comision = e.getComisionCajaRural();        break;
             case "DeutscheBank":    comision = e.getComisionDeutscheBank();     break;
-            case "Liberban":        comision = e.getComisionLiberbank();        break;
+            case "Liberbank":       comision = e.getComisionLiberbank();        break;
             case "Popular":         comision = e.getComisionPopular();          break;
             case "Sabadell":        comision = e.getComisionSabadell();         break;
             case "Santander":       comision = e.getComisionSantander();        break;
