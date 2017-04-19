@@ -127,7 +127,7 @@ public class MapaActivity extends AppCompatActivity implements OnMapReadyCallbac
                 loc.setLongitude(longitud);
                 setLocation(loc);
                 mapa.addMarker(markerOptions.position(cajero).title(entidadBancaria)
-                        .snippet("Distancia: "+distancia+" m --- Direccion: "+direccion+" --- Comisión: "+comision+" "+moneda).icon(icon));
+                        .snippet("Distancia: "+distancia+" m --- Dirección: "+direccion+" --- Comisión: "+comision+" "+moneda).icon(icon));
                 mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(cajero, 15));
                 break;
             // Conjunto de cajeros de una determinada entidad bancaria
